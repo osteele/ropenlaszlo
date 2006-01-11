@@ -1,8 +1,8 @@
 = ROpenLaszlo Interface to the OpenLaszlo Platform
 
-ROpenLaszo is a Ruby interface to the OpenLaszlo platform for creating rich internet applicatons.  It allows you to compile OpenLaszlo programs from within Ruby, in order to integrate OpenLaszlo development into Rake or Rails applications.
+ROpenLaszo is a Ruby interface to the OpenLaszlo[http://openlaszlo.org] platform for creating rich internet applicatons.  It allows you to compile OpenLaszlo[http://openlaszlo.org] programs from within Ruby, in order to integrate OpenLaszlo[http://openlaszlo.org] development into Rake or Rails applications.
 
-OpenLaszlo programs are written in XML with embedded JavaScript, and compiled into Flash (swf) binary files, or DHTML.  (As of this writing, the DHTML target is in pre-beta form.)  The APIs in this library make it easy for Ruby code to invoke the OpenLaszlo compiler.  For example, if hello.lzx contains the following text:
+OpenLaszlo[http://openlaszlo.org] programs are written in XML with embedded JavaScript, and compiled into Flash (swf) binary files, or DHTML.  (As of this writing, the DHTML target is in pre-beta form.)  The APIs in this library make it easy for Ruby code to invoke the OpenLaszlo[http://openlaszlo.org] compiler.  For example, if hello.lzx contains the following text:
   <canvas>
     <window>
       <button>Hello, World!</button>
@@ -15,7 +15,7 @@ then the following Ruby code can be used to create a file 'hello.swf' which can 
 
 == Requirements
 
-* OpenLaszlo 3.1 [http://openlaszlo.org]
+* {OpenLaszlo 3.1}[http://openlaszlo.org]
  * Ruby -v 1.8.2 or later (untested in earlier versions)
 
 == Downloading and Installation

@@ -1,11 +1,13 @@
-== Version 0.2.0
-* Created gem specification
+- Change Log
+
+== Version 0.2.0 (2006/01/11)
+* Released as gem
+* Published to rubyforge
 * Added doc directory
 * Added test directory
 * Added examples directory
-* Hosted on rubyforge
 
-== Version 0.1.0
+== Version 0.1.0 (2006/01/04)
 * Initial release
+* Published to osteele.com
 * Announced on weblog.openlaszlo.org
-* Hosted on osteele.com

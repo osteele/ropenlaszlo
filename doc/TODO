@@ -1,6 +1,18 @@
-* Class for compiler configuration errors
+= ROpenLaszlo Project -- To Do List
+
+== Compiler
 * Dependency tracking
 * Detect when file is not present
-* Unit tests for additional compiler parameters and edge cases
+* Class for compiler configuration errors
+
+== Unit Tests
+* Compiler parameters
+* Missing source file
+* Syntax error
+* Unreachable server
+* Invalid OPENLASZLO_HOME
+
+== Packaging
 * Add rake task file
 * Add unit testing, doc generation to rakefile
+

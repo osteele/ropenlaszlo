@@ -19,13 +19,16 @@ spec = Gem::Specification.new do |s|
   s.email = 'steele@osteele.com'
   s.homepage = 'http://ropenlaszlo.rubyforge.org'
   s.rubyforge_project = 'ropenlaszlo'
-  #s.requirements << 'none'
   s.require_path = 'lib'
   s.files = PKG_FILES
   s.description = <<-EOF
     ROpenLaszlo is an interface to the OpenLaszlo compiler.
 EOF
   s.has_rdoc = true
+  s.extra_rdoc_files = FileList['doc/*']
+  s.rdoc_options << '--title' <<
+    'ROpenLaszlo -- Ruby interface to OpenLaszlo' <<
+    '--main' << 'doc/README'
 end
 
 Rake::GemPackageTask.new(spec) do |pkg|
@@ -33,8 +36,9 @@ Rake::GemPackageTask.new(spec) do |pkg|
   pkg.need_tar = true
 end
 
-task :install do
-  sh "sudo gem install ropenlaszlo --source file://#{File.expand_path "pkg/ropenlaszlo-0.2.0.gem"}"
+task :test_install do
+  sh "gem uninstall ropenlaszlo"
+  sh "gem install pkg/ropenlaszlo"
 end
 
 task :clean do
