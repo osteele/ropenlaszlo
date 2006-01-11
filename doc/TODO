@@ -1,0 +1,6 @@
+* Class for compiler configuration errors
+* Dependency tracking
+* Detect when file is not present
+* Unit tests for additional compiler parameters and edge cases
+* Add rake task file
+* Add unit testing, doc generation to rakefile

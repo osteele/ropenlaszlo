@@ -1,0 +1,11 @@
+== Version 0.2.0
+* Created gem specification
+* Added doc directory
+* Added test directory
+* Added examples directory
+* Hosted on rubyforge
+
+== Version 0.1.0
+* Initial release
+* Announced on weblog.openlaszlo.org
+* Hosted on osteele.com

@@ -1,0 +1,37 @@
+= ROpenLaszlo Interface to the OpenLaszlo Platform
+
+ROpenLaszo is a Ruby interface to the OpenLaszlo platform for creating rich internet applicatons.  It allows you to compile OpenLaszlo programs from within Ruby, in order to integrate OpenLaszlo development into Rake or Rails applications.
+
+OpenLaszlo programs are written in XML with embedded JavaScript, and compiled into Flash (swf) binary files, or DHTML.  (As of this writing, the DHTML target is in pre-beta form.)  The APIs in this library make it easy for Ruby code to invoke the OpenLaszlo compiler.  For example, if hello.lzx contains the following text:
+  <canvas>
+    <window>
+      <button>Hello, World!</button>
+    </window>
+  </canvas>
+then the following Ruby code can be used to create a file 'hello.swf' which can be executed in a browser or placed on a web site:
+  require 'rubygems'
+  require 'ropenlaszlo'
+  OpenLaszlo::compile 'hello.lzx'
+
+== Requirements
+
+* OpenLaszlo 3.1 [http://openlaszlo.org]
+ * Ruby -v 1.8.2 or later (untested in earlier versions)
+
+== Downloading and Installation
+
+ROpenLaszlo is distributed as a RubyGem.  You may download it from ROpenLaszlo's RubyForge project[http://rubyforge.org/projects/ropenlaszlo].
+
+Installation of ROpenLaszlo requires that you have RubyGems[http://rubygems.rubyforge.org] installed.  In that case, you can download the ROpenLaszlo .gem to your local file system, and execute:
+
+  gem install ropenlaszlo
+
+== Documentation
+
+http://weblog.openlaszlo.org/archives/2006/01/deploying-openlaszlo-applications-with-rake/ has additional information and some examples of using ROpenLaszlo in a Rakefile.  (Where that entry says to download 'openlaszlo.rb' and require 'openlaszlo', you should instead install this ropenlaszlo gem and require 'ropenlaszlo'.)
+
+== License
+
+ROpenLaszlo is copyright (c) 2006 Oliver Steele.  It is open-source software, and may be redistributed
+under the terms of the MIT license. The text of this licences is included in the
+ROpenLaszlo distribution, under the +doc+ subdirectory.
