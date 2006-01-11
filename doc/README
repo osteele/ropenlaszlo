@@ -16,11 +16,11 @@ then the following Ruby code can be used to create a file 'hello.swf' which can 
 == Requirements
 
 * {OpenLaszlo 3.1}[http://openlaszlo.org]
- * Ruby -v 1.8.2 or later (untested in earlier versions)
+* Ruby -v 1.8.2 or later (untested in earlier versions)
 
 == Downloading and Installation
 
-ROpenLaszlo is distributed as a RubyGem.  You may download it from ROpenLaszlo's RubyForge project[http://rubyforge.org/projects/ropenlaszlo].
+ROpenLaszlo is distributed as a RubyGem.  You may download it from ROpenLaszlo's {RubyForge project}[http://rubyforge.org/projects/ropenlaszlo].
 
 Installation of ROpenLaszlo requires that you have RubyGems[http://rubygems.rubyforge.org] installed.  In that case, you can download the ROpenLaszlo .gem to your local file system, and execute:
 
@@ -28,7 +28,7 @@ Installation of ROpenLaszlo requires that you have RubyGems[http://rubygems.ruby
 
 == Documentation
 
-http://weblog.openlaszlo.org/archives/2006/01/deploying-openlaszlo-applications-with-rake/ has additional information and some examples of using ROpenLaszlo in a Rakefile.  (Where that entry says to download 'openlaszlo.rb' and require 'openlaszlo', you should instead install this ropenlaszlo gem and require 'ropenlaszlo'.)
+{This OpenLaszlo Blog entry}[http://weblog.openlaszlo.org/archives/2006/01/deploying-openlaszlo-applications-with-rake/] has additional information and some examples of using ROpenLaszlo in a Rakefile.  Where that entry says to download +openlaszlo.rb+ and require +openlaszlo+, you should instead install this ropenlaszlo gem and require +ropenlaszlo+.)
 
 == License
 
