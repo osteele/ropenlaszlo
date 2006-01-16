@@ -9,12 +9,16 @@ require 'rubygems'
 require 'rake/gempackagetask'
 require 'rake/testtask'
 require 'rake/rdoctask'
+require 'rake/clean'
 
 PKG_NAME = "ropenlaszlo"
 PKG_VERSION = '0.2.0'
 RUBYFORGE_PROJECT = 'ropenlaszlo'
+RUBYFORGE_USER = ENV['RUBYFORGE_USER']
 
 PKG_FILES = FileList['{lib,doc,test}/**/*'].exclude('.svn')
+
+CLEAN.include FileList['test/*.swf']
 
 Rake::TestTask.new(:test) do |t|
   t.libs << 'lib'
@@ -60,6 +64,10 @@ end
 
 task :clean do
   rm_rf 'pkg'
+end
+
+task :publish_rdoc do
+  sh" scp -r rdoc #{RUBYFORGE_USER}@rubyforge.org:/var/www/gforge-projects/#{RUBYFORGE_PROJECT}"
 end
 
 # Adapted from Typo's Rakefile

@@ -42,6 +42,8 @@
 # See OpenLaszlo.compile for additional documentation.
 # 
 module OpenLaszlo
+  class CompilationError < StandardError; end
+  
   # This class implements a bridge to the compile server.
   #
   # If you don't need multiple compilers, you can use the methods in
@@ -65,6 +67,35 @@ module OpenLaszlo
     # Additional options:
     # * <tt>:format</tt> - request type (default 'swf')
     def compile source_file, params={}
+      mtime = File.mtime source_file
+      output = params[:output] || "#{File.basename source_file, '.lzx'}.swf"
+      compile_object source_file, output, params
+      results = request_metadata_for source_file, params
+      raise "Race condition: #{source_file} was modified during compilation" if mtime != File.mtime(source_file)
+      results[:output] = output
+      raise CompilationError.new(results[:error]) if results[:error]
+      return results
+    end
+    
+    private
+    def compile_object source_file, object, params={}
+      params = {}.update(params).update(:output => object)
+      request source_file, params
+    end
+    
+    def request_metadata_for source_file, params={}
+      results = {}
+      params = {}.update(params).update(:format => 'canvas-xml', :output => nil)
+      text = request source_file, params
+      if text =~ %r{<warnings>(.*?)</warnings>}m
+        results[:warnings] = $1.scan(%r{<error>\s*(.*?)\s*</error>}m).map{|w|w.first}
+      elsif text !~ %r{<canvas>} && text =~ %r{<pre>Error:\s*(.*?)\s*</pre>}m
+        results[:error] = $1
+      end
+      return results
+    end
+    
+    def request source_file, params={}
       require 'net/http'
       require 'uri'
       # assert that pathname is relative to LPS home:
@@ -74,7 +105,7 @@ module OpenLaszlo
       # FIXME: this doesn't handle quoting; use recursive File.split instead
       # FIXME: should encode the url, for filenames that include '/'
       server_relative_path.gsub(File::Separator, '/')
-      output = params[:output] || "#{File.basename source_file, '.lzx'}.swf"
+      output = params[:output]
       options = {
         :lzr => params[:runtime],
         :debug => params[:debug],
@@ -86,16 +117,19 @@ module OpenLaszlo
       Net::HTTP.get_response URI.parse(url) do |response|
         case response
         when Net::HTTPOK
-          File.open(output, 'w') do |f|
-            response.read_body do |segment|
-              f << segment
+          if output
+            File.open(output, 'w') do |f|
+              response.read_body do |segment|
+                f << segment
+              end
             end
+          else
+            return response.body
           end
         else
           response.value # raises error
         end
       end
-      return output
     end
   end
   

@@ -1,0 +1,2 @@
+<!-- This doesn't have a close tag, so it will fail compilation. -->
+<canvas
