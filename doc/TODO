@@ -2,15 +2,13 @@
 
 == Compiler
 * Dependency tracking
-* Detect when file is not present
-* Define class for compiler configuration errors
 * Compile server: allow use of proxy
 * Compile server: temporarily copy files into webapp directory
+* Command line: detect compilation warnings
 
 == Unit Tests
 * Compiler parameters
 * Missing source file
-* Syntax error
 * Unreachable server
 * Invalid OPENLASZLO_HOME
 

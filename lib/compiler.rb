@@ -178,7 +178,16 @@ module OpenLaszlo
       args << '--profile' if params[:profile]
       args << "--dir '#{File.dirname output}'" unless File.dirname(source_file) == File.dirname(output)
       args << source_file
-      `#{@lzc} #{args.join(' ')}`
+      text = `#{@lzc} #{args.join(' ')}`
+      text.gsub!(/^\d+\s+/, '') # work around a bug in OpenLaszlo 3.1
+      results = {:output => output}
+      if text =~ /^Compilation errors occurred:\n/
+        raise CompilationError.new($'.strip)
+      else
+        # FIXME: doesn't work because lzc prints errors to stderr
+        results[:warnings] = text.split("\n")
+      end
+      return results
     end
     
     private

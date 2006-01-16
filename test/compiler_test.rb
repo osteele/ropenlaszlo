@@ -3,7 +3,7 @@
 # License:: Ruby License.
 
 $:.unshift File.dirname(__FILE__) + "/../lib"
-require 'utils'
+
 require 'test/unit'
 require 'ropenlaszlo'
 require 'fileutils'
@@ -15,6 +15,29 @@ unless REQUIRED_ENV_VALUES.reject {|w| ENV[w]}.empty?
   raise "These environment variables must be set: #{REQUIRED_ENV_VALUES}.join(', ')"
 end
 
+class << ENV
+  # Execute a block, restoring the bindings for +keys+ at the end.
+  # NOT thread-safe!
+  def with_saved_bindings keys, &block
+    saved_bindings = Hash[*keys.map {|k| [k, ENV[k]]}.flatten]
+    begin
+      block.call
+    ensure
+      ENV.update saved_bindings
+    end
+  end
+  
+  # Execute a block with the temporary bindings in +bindings+.
+  # Doesn't remove keys; simply sets them to nil.
+  def with_bindings bindings, &block
+    with_saved_bindings bindings.keys do
+      ENV.update bindings
+      return block.call
+    end
+  end
+end
+
+# FIXME: should be able to put the test methods in here too
 module CompilerTestHelper
   def super_setup
     OpenLaszlo::compiler = nil
@@ -31,8 +54,9 @@ module CompilerTestHelper
     output = File.basename(file, '.lzx')+'.swf'
     rm_f output
     begin
-      OpenLaszlo::compile file, *options
+      result = OpenLaszlo::compile file, *options
       assert File.exists?(output), "#{output} does not exist"
+      return result
     ensure
       rm_f output
     end
@@ -53,7 +77,23 @@ class CompileServerTest < Test::Unit::TestCase
   end
     
   def test_compilation
-    compile 'test.lzx'
+    result = compile 'test.lzx'
+    assert_equal 'test.swf', result[:output]
+  end
+  
+  def test_compilation_error
+    #assert_raise(OpenLaszlo::CompilationError) {compile 'compilation-error.lzx'}
+    ex = (compile 'compilation-error.lzx' rescue $!)
+    assert_instance_of OpenLaszlo::CompilationError, ex
+    assert_match /^compilation-error.lzx:3:1: XML document structures must start and end within the same entity./, ex.message
+  end
+  
+  def test_compilation_warning
+    result = compile 'compilation-warning.lzx'
+    assert_equal 'compilation-warning.swf', result[:output]
+    assert_instance_of Array, result[:warnings]
+    assert_equal 2, result[:warnings].length
+    assert_match /^compilation-warning.lzx:1:36/, result[:warnings].first
   end
   
   private
@@ -93,7 +133,14 @@ class CommandLineCompilerTest < Test::Unit::TestCase
   end
   
   def test_compilation
-    compile 'test.lzx'
+    result = compile 'test.lzx'
+    assert_equal 'test.swf', result[:output]
+  end
+  
+  def test_compilation_error
+    ex = (compile 'compilation-error.lzx' rescue $!)
+    assert_instance_of OpenLaszlo::CompilationError, ex
+    assert_match /^compilation-error.lzx:3:1: XML document structures must start and end within the same entity./, ex.message
   end
 end
 
