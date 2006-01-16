@@ -15,20 +15,23 @@ then the following Ruby code can be used to create a file 'hello.swf' which can 
 
 == Requirements
 
-* {OpenLaszlo 3.1}[http://openlaszlo.org]
+* {OpenLaszlo 3.1 or later}[http://openlaszlo.org]
 * Ruby -v 1.8.2 or later (untested in earlier versions)
+* RubyGems[http://rubygems.rubyforge.org]
 
-== Downloading and Installation
+== Installation
 
-ROpenLaszlo is distributed as a RubyGem.  You may download it from ROpenLaszlo's {RubyForge project}[http://rubyforge.org/projects/ropenlaszlo].
+0:: Download and install {OpenLaszlo}[http://openlaszlo.org]
 
-Installation of ROpenLaszlo requires that you have RubyGems[http://rubygems.rubyforge.org] installed.  In that case, you can download the ROpenLaszlo .gem to your local file system, and execute:
+1: Install this gem
+  > gem install ropenlaszlo
 
-  gem install ropenlaszlo
+2:: Set your +OPENLASZLO_HOME+ environment variable to the directory that contains the {OpenLaszlo SDK}[http://openlaszlo.org].  If the following prints something, you've got it right:
+  > grep Laszlo "$OPENLASZLO_HOME/README.txt"
 
 == Documentation
 
-{This OpenLaszlo Blog entry}[http://weblog.openlaszlo.org/archives/2006/01/deploying-openlaszlo-applications-with-rake/] has additional information and some examples of using ROpenLaszlo in a Rakefile.  Where that entry says to download +openlaszlo.rb+ and require +openlaszlo+, you should instead install this ropenlaszlo gem and require +ropenlaszlo+.)
+{This OpenLaszlo Blog entry}[http://weblog.openlaszlo.org/archives/2006/01/deploying-openlaszlo-applications-with-rake/] has additional information and some examples of using ROpenLaszlo in a Rakefile.
 
 == License
 

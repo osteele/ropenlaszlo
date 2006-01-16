@@ -7,6 +7,8 @@
 
 require 'rubygems'
 require 'rake/gempackagetask'
+require 'rake/testtask'
+require 'rake/rdoctask'
 
 PKG_NAME = "ropenlaszlo"
 PKG_VERSION = '0.2.0'
@@ -14,29 +16,41 @@ RUBYFORGE_PROJECT = 'ropenlaszlo'
 
 PKG_FILES = FileList['{lib,doc,test}/**/*'].exclude('.svn')
 
+Rake::TestTask.new(:test) do |t|
+  t.libs << 'lib'
+  t.pattern = 'test/**/*_test.rb'
+  t.verbose = true
+end
+
 spec = Gem::Specification.new do |s|
   s.name = PKG_NAME
   s.version = PKG_VERSION
+  s.rubyforge_project = RUBYFORGE_PROJECT
+  s.files = PKG_FILES
   s.summary = "Ruby interface to OpenLaszlo."
+  s.homepage = 'http://ropenlaszlo.rubyforge.org'
   s.author = 'Oliver Steele'
   s.email = 'steele@osteele.com'
-  s.homepage = 'http://ropenlaszlo.rubyforge.org'
-  s.rubyforge_project = RUBYFORGE_PROJECT
   s.require_path = 'lib'
-  s.files = PKG_FILES
   s.description = <<-EOF
     ROpenLaszlo is an interface to the OpenLaszlo compiler.
 EOF
   s.has_rdoc = true
   s.extra_rdoc_files = FileList['doc/*']
-  s.rdoc_options << '--title' <<
-    'ROpenLaszlo -- Ruby interface to OpenLaszlo' <<
+  s.rdoc_options << '--title' << "ROpenLaszlo: #{s.summary}" <<
     '--main' << 'doc/README'
 end
 
 Rake::GemPackageTask.new(spec) do |pkg|
   pkg.need_zip = true
   pkg.need_tar = true
+end
+
+desc 'Generate documentation for the plugin.'
+Rake::RDocTask.new(:rdoc) do |rd|
+  rd.rdoc_dir = 'rdoc'
+  rd.options += spec.rdoc_options.to_a.flatten
+  rd.rdoc_files += spec.files
 end
 
 task :test_install do

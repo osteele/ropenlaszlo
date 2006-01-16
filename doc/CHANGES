@@ -1,5 +1,13 @@
 = Change Log
 
+== Trunk
+* refactored test case setup
+* fixed test case directory
+* added rdoc task
+* --output doesn't exist; --dir does
+* Updated installation instructions
+* Fixed rdoc formatting errors
+
 == Version 0.2.0 (2006/01/11)
 * Released as gem
 * Published to rubyforge

@@ -3,7 +3,7 @@
 # License:: Ruby License.
 
 $:.unshift File.dirname(__FILE__) + "/../lib"
-
+require 'utils'
 require 'test/unit'
 require 'ropenlaszlo'
 require 'fileutils'
@@ -15,36 +15,19 @@ unless REQUIRED_ENV_VALUES.reject {|w| ENV[w]}.empty?
   raise "These environment variables must be set: #{REQUIRED_ENV_VALUES}.join(', ')"
 end
 
-class << ENV
-  # Execute a block, restoring the bindings for +keys+ at the end.
-  # NOT thread-safe!
-  def with_saved_bindings keys, &block
-    saved_bindings = Hash[*keys.map {|k| [k, ENV[k]]}.flatten]
-    begin
-      block.call
-    ensure
-      ENV.update saved_bindings
-    end
-  end
-  
-  # Execute a block with the temporary bindings in +bindings+.
-  # Doesn't remove keys; simply sets them to nil.
-  def with_bindings bindings, &block
-    with_saved_bindings bindings.keys do
-      ENV.update bindings
-      return block.call
-    end
-  end
-end
-
 module CompilerTestHelper
   def super_setup
     OpenLaszlo::compiler = nil
-    cd File.dirname(__FILE__)
+    #cd File.expand_path(File.dirname(__FILE__))
   end
   
   private
+  def testfile_pathname file
+    File.expand_path file, File.dirname(__FILE__)
+  end
+  
   def compile file, output=nil, options={}
+    file = testfile_pathname file
     output = File.basename(file, '.lzx')+'.swf'
     rm_f output
     begin
@@ -77,6 +60,7 @@ class CompileServerTest < Test::Unit::TestCase
   alias :saved_compile :compile
   
   def compile file, output=nil, options={}
+    file = testfile_pathname file
     server_local_file = File.join @test_dir, File.basename(file)
     cp file, server_local_file
     begin
@@ -91,14 +75,21 @@ class CommandLineCompilerTest < Test::Unit::TestCase
   include CompilerTestHelper
   
   def setup
-    bindings = {'OPENLASZLO_URL' => nil}
-    @saved_bindings = Hash[*bindings.keys.map{|k|[k,ENV[k]]}.flatten]
-    ENV.update bindings
     super_setup
+    callcc do |exit|
+      resume = nil
+      ENV.with_bindings 'OPENLASZLO_URL' => nil do
+        resume = callcc do |continue|
+          @teardown = continue
+          exit.call
+        end
+      end
+      resume.call
+    end
   end
   
   def teardown
-    ENV.update @saved_bindings
+    callcc do |continue| @teardown.call(continue) end
   end
   
   def test_compilation

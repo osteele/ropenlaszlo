@@ -142,8 +142,9 @@ module OpenLaszlo
       args << '--runtime=#{params[:runtime]}' if params[:runtime]
       args << '--debug' if params[:debug]
       args << '--profile' if params[:profile]
-      args << "--output '#{File.basename output}'" unless File.dirname(source_file) == File.dirname(output)
-      `#{@lzc} #{args.join(' ')} '#{source_file}'`
+      args << "--dir '#{File.dirname output}'" unless File.dirname(source_file) == File.dirname(output)
+      args << source_file
+      `#{@lzc} #{args.join(' ')}`
     end
     
     private
@@ -169,7 +170,7 @@ module OpenLaszlo
     return @compiler = CompileServer.new if ENV['OPENLASZLO_URL'] and ENV['OPENLASZLO_HOME']
     return @compiler = CommandLineCompiler.new if ENV['OPENLASZLO_HOME']
     raise <<EOF
-Couldn't find an OpenLaszlo compiler.
+Couldn\'t find an OpenLaszlo compiler.
 
 To use the compile server (recommended), set ENV['OPENLASZLO_URL'] and ENV['OPENLASZLO_HOME'].
 

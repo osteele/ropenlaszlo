@@ -3,7 +3,9 @@
 == Compiler
 * Dependency tracking
 * Detect when file is not present
-* Class for compiler configuration errors
+* Define class for compiler configuration errors
+* Compile server: allow use of proxy
+* Compile server: temporarily copy files into webapp directory
 
 == Unit Tests
 * Compiler parameters
@@ -15,4 +17,3 @@
 == Packaging
 * Add rake task file
 * Add unit testing, doc generation to rakefile
-
