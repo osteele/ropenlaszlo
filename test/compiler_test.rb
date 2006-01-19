@@ -1,40 +1,15 @@
-# Author:: Oliver Steele
-# Copyright:: Copyright (c) 2005-2006 Oliver Steele.  All rights reserved.
-# License:: Ruby License.
-
 $:.unshift File.dirname(__FILE__) + "/../lib"
 
 require 'test/unit'
 require 'ropenlaszlo'
 require 'fileutils'
+require File.join(File.dirname(__FILE__), 'test_utils.rb')
 
 include FileUtils
 
 REQUIRED_ENV_VALUES = %w{OPENLASZLO_HOME OPENLASZLO_HOME}
 unless REQUIRED_ENV_VALUES.reject {|w| ENV[w]}.empty?
   raise "These environment variables must be set: #{REQUIRED_ENV_VALUES}.join(', ')"
-end
-
-class << ENV
-  # Execute a block, restoring the bindings for +keys+ at the end.
-  # NOT thread-safe!
-  def with_saved_bindings keys, &block
-    saved_bindings = Hash[*keys.map {|k| [k, ENV[k]]}.flatten]
-    begin
-      block.call
-    ensure
-      ENV.update saved_bindings
-    end
-  end
-  
-  # Execute a block with the temporary bindings in +bindings+.
-  # Doesn't remove keys; simply sets them to nil.
-  def with_bindings bindings, &block
-    with_saved_bindings bindings.keys do
-      ENV.update bindings
-      return block.call
-    end
-  end
 end
 
 # FIXME: should be able to put the test methods in here too
