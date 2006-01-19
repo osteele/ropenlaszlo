@@ -1,36 +1,14 @@
 # Author:: Oliver Steele
 # Copyright:: Copyright (c) 2005-2006 Oliver Steele.  All rights reserved.
 # License:: Ruby License.
-#
-# This module contains utility methods for compiling OpenLaszlo[http://openlaszlo.org] programs.  See the OpenLaszlo module documentation for usage information.
-# 
-#--
-# Bugs:
-# - syntax error compiles swf anyway
-#
-# Todo:
-# - unit tests
-# - doc :profile
-#
-# Wishlist:
-# - compile_string
-# - detect compiler version
-# - select compiler based on file location; or, copy files
-# - retrieve dependencies
-# - retrieve compiler warnings
-#
-# Corners:
-# - detect invalid parameters
-# - server isn't running
-# - lps-dev/foo isn't inside lps
-
  
 # == module OpenLaszlo
 # 
-# This module contains utility methods for compiling OpenLaszlo[http://openlaszlo.org] programs.
+# This module contains utility methods for compiling
+# OpenLaszlo[openlaszlo.org] programs.
 #
 # Example:
-#   # Set up the environment to use the compile server.  The OpenLaszlo server
+#   # Set up the environment to use the compile server.  The Open<tt></tt>Laszlo server
 #   # must be running in order at this location in order for this to work.
 #   ENV['OPENLASZLO_HOME'] = '/Applications/OpenLaszlo Server 3.1'
 #   ENV['OPENLASZLO_URL'] = 'http://localhost:8080/lps-3.1'
@@ -50,17 +28,17 @@ module OpenLaszlo
   # the OpenLaszlo module instead.
   #
   # The compile server is faster than CommandLineCompiler, but can only compile
-  # files in the same directory as the {OpenLaszlo SDK}[http://openlaszlo.org].
+  # files in the same directory as the Open<tt></tt>Laszlo SDK.
   class CompileServer
     # Options:
-    # * <tt>:openlaszlo_home</tt> - filesystem location of the OpenLaszlo SDK.  Defaults to EVN['OPENLASZLO_HOME']
+    # * <tt>:openlaszlo_home</tt> - filesystem location of the Open<tt></tt>Laszlo SDK.  Defaults to EVN['OPENLASZLO_HOME']
     # * <tt>:server_uri</tt> - the URI of the server.  Defaults to ENV['OPENLASZLO_URL'] if this is specified, otherwise to 'http://localhost:8080/lps-dev'.
     def initialize params={}
       @home = params[:home] || ENV['OPENLASZLO_HOME']
       @base_url = params[:server_uri] || ENV['OPENLASZLO_URL'] || 'http://localhost:8080/lps-dev'
     end
     
-    # Invokes the OpenLaszlo server-based compiler on +source_file+.
+    # Invokes the Open<tt></tt>Laszlo server-based compiler on +source_file+.
     # +source_file+ must be inside the home directory of the server.
     # See OpenLaszlo.compile for a description of the +params+.
     #
@@ -147,7 +125,7 @@ module OpenLaszlo
     # * <tt>:compiler_script</tt> - the path to the shell script that
     # invokes the compiler.  This defaults to a standard location inside
     # the value specified by :home.
-    # * <tt>:openlaszlo_home</tt> - the home directory of the OpenLaszlo SDK.
+    # * <tt>:openlaszlo_home</tt> - the home directory of the Open<tt></tt>Laszlo SDK.
     # This defaults to ENV['OPENLASZLO_HOME'].
     def initialize params={}
       @lzc = params[:compiler_script]
@@ -226,7 +204,7 @@ EOF
     @compiler = compiler
   end
   
-  # Compile an OpenLaszlo[http://openlaszlo.org] source file.
+  # Compile an OpenLaszlo source file.
   #
   # Examples:
   #   require 'openlaszlo'

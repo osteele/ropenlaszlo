@@ -1,6 +1,10 @@
 = Change Log
 
 == Trunk
+* improve rdoc
+
+== Version 0.3.0 (2006/01/16)
+* compilation errors and warnings
 * refactored test case setup
 * fixed test case directory
 * added rdoc task

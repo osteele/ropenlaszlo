@@ -12,7 +12,7 @@ require 'rake/rdoctask'
 require 'rake/clean'
 
 PKG_NAME = "ropenlaszlo"
-PKG_VERSION = '0.2.0'
+PKG_VERSION = '0.3.0'
 RUBYFORGE_PROJECT = 'ropenlaszlo'
 RUBYFORGE_USER = ENV['RUBYFORGE_USER']
 
@@ -41,7 +41,8 @@ spec = Gem::Specification.new do |s|
 EOF
   s.has_rdoc = true
   s.extra_rdoc_files = FileList['doc/*']
-  s.rdoc_options << '--title' << "ROpenLaszlo: #{s.summary}" <<
+  s.rdoc_options << '--title' << "ROpenLaszlo: #{s.summary.sub(/.$/,'')}" <<
+    '--exclude' << 'test/.*'
     '--main' << 'doc/README'
 end
 
@@ -54,9 +55,12 @@ desc 'Generate documentation for the plugin.'
 Rake::RDocTask.new(:rdoc) do |rd|
   rd.rdoc_dir = 'rdoc'
   rd.options += spec.rdoc_options.to_a.flatten
-  rd.rdoc_files += spec.files
+  rd.rdoc_files.include 'doc/README' # neceessary for --main to work
+  rd.rdoc_files.include spec.files
+  rd.rdoc_files.exclude 'test/*'
 end
 
+desc 'Uninstall and reinstall the gem, for local testing.'
 task :test_install do
   sh "gem uninstall ropenlaszlo"
   sh "gem install pkg/ropenlaszlo"
@@ -67,7 +71,7 @@ task :clean do
 end
 
 task :publish_rdoc do
-  sh" scp -r rdoc #{RUBYFORGE_USER}@rubyforge.org:/var/www/gforge-projects/#{RUBYFORGE_PROJECT}"
+  sh" scp -r rdoc/* #{RUBYFORGE_USER}@rubyforge.org:/var/www/gforge-projects/#{RUBYFORGE_PROJECT}"
 end
 
 # Adapted from Typo's Rakefile

@@ -1,10 +1,12 @@
 = ROpenLaszlo Project -- To Do List
 
-== Compiler
+== Features
 * Dependency tracking
 * Compile server: allow use of proxy
 * Compile server: temporarily copy files into webapp directory
 * Command line: detect compilation warnings
+* compile_string
+* detect compiler version
 
 == Unit Tests
 * Compiler parameters
@@ -14,4 +16,10 @@
 
 == Packaging
 * Add rake task file
-* Add unit testing, doc generation to rakefile
+* Add unit testing to rakefile
+
+== Corners
+* invalid parameters
+* server isn't running
+* thinks lps-dev/foo is in lps/ directory
+
