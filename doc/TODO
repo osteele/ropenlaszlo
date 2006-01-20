@@ -1,22 +1,18 @@
 = ROpenLaszlo Project -- To Do List
 
 == Features
-* Dependency tracking
-* Compile server: allow use of proxy
+* Add rake task file
+* Compile server: allow use of proxy?
 * Compile server: temporarily copy files into webapp directory
-* Command line: detect compilation warnings
 * compile_string
-* detect compiler version
+* Dependency tracking
+* query compiler version
 
 == Unit Tests
 * Compiler parameters
 * Missing source file
 * Unreachable server
 * Invalid OPENLASZLO_HOME
-
-== Packaging
-* Add rake task file
-* Add unit testing to rakefile
 
 == Corners
 * invalid parameters

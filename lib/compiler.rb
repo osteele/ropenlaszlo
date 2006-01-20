@@ -33,22 +33,23 @@ module OpenLaszlo
     # Options:
     # * <tt>:openlaszlo_home</tt> - filesystem location of the Open<tt></tt>Laszlo SDK.  Defaults to EVN['OPENLASZLO_HOME']
     # * <tt>:server_uri</tt> - the URI of the server.  Defaults to ENV['OPENLASZLO_URL'] if this is specified, otherwise to 'http://localhost:8080/lps-dev'.
-    def initialize params={}
-      @home = params[:home] || ENV['OPENLASZLO_HOME']
-      @base_url = params[:server_uri] || ENV['OPENLASZLO_URL'] || 'http://localhost:8080/lps-dev'
+    def initialize options={}
+      @home = options[:home] || ENV['OPENLASZLO_HOME']
+      @base_url = options[:server_uri] || ENV['OPENLASZLO_URL'] || 'http://localhost:8080/lps-dev'
     end
     
-    # Invokes the Open<tt></tt>Laszlo server-based compiler on +source_file+.
-    # +source_file+ must be inside the home directory of the server.
-    # See OpenLaszlo.compile for a description of the +params+.
+    # Invokes the Open<tt></tt>Laszlo server-based compiler on
+    # +source_file+.  +source_file+ must be inside the home directory
+    # of the server.
     #
-    # Additional options:
+    # Options:
     # * <tt>:format</tt> - request type (default 'swf')
-    def compile source_file, params={}
+    # See OpenLaszlo.compile for a description of +options+.
+    def compile source_file, options={}
       mtime = File.mtime source_file
-      output = params[:output] || "#{File.basename source_file, '.lzx'}.swf"
-      compile_object source_file, output, params
-      results = request_metadata_for source_file, params
+      output = options[:output] || "#{File.expand_path(File.join(File.dirname(source_file), File.basename(source_file, '.lzx')))}.swf"
+      compile_object source_file, output, options
+      results = request_metadata_for source_file, options
       raise "Race condition: #{source_file} was modified during compilation" if mtime != File.mtime(source_file)
       results[:output] = output
       raise CompilationError.new(results[:error]) if results[:error]
@@ -56,15 +57,15 @@ module OpenLaszlo
     end
     
     private
-    def compile_object source_file, object, params={}
-      params = {}.update(params).update(:output => object)
-      request source_file, params
+    def compile_object source_file, object, options={}
+      options = {}.update(options).update(:output => object)
+      request source_file, options
     end
     
-    def request_metadata_for source_file, params={}
+    def request_metadata_for source_file, options={}
       results = {}
-      params = {}.update(params).update(:format => 'canvas-xml', :output => nil)
-      text = request source_file, params
+      options = {}.update(options).update(:format => 'canvas-xml', :output => nil)
+      text = request source_file, options
       if text =~ %r{<warnings>(.*?)</warnings>}m
         results[:warnings] = $1.scan(%r{<error>\s*(.*?)\s*</error>}m).map{|w|w.first}
       elsif text !~ %r{<canvas>} && text =~ %r{<pre>Error:\s*(.*?)\s*</pre>}m
@@ -73,7 +74,8 @@ module OpenLaszlo
       return results
     end
     
-    def request source_file, params={}
+    def request source_file, options={}
+      output = options[:output]
       require 'net/http'
       require 'uri'
       # assert that pathname is relative to LPS home:
@@ -83,12 +85,11 @@ module OpenLaszlo
       # FIXME: this doesn't handle quoting; use recursive File.split instead
       # FIXME: should encode the url, for filenames that include '/'
       server_relative_path.gsub(File::Separator, '/')
-      output = params[:output]
       options = {
-        :lzr => params[:runtime],
-        :debug => params[:debug],
-        :lzproxied => params[:proxied] == nil ? params[:proxied] : false,
-        :lzt => params[:format] || 'swf'}
+        :lzr => options[:runtime],
+        :debug => options[:debug],
+        :lzproxied => options.fetch(:proxied, false),
+        :lzt => options[:format] || 'swf'}
       query = options.map{|k,v|"#{k}=#{v}" unless v.nil?}.compact.join('&')
       url = "#{@base_url}#{server_relative_path}"
       url += "?#{query}" unless query.empty?
@@ -105,7 +106,7 @@ module OpenLaszlo
             return response.body
           end
         else
-          response.value # raises error
+          response.value # for effect: raises error
         end
       end
     end
@@ -127,43 +128,46 @@ module OpenLaszlo
     # the value specified by :home.
     # * <tt>:openlaszlo_home</tt> - the home directory of the Open<tt></tt>Laszlo SDK.
     # This defaults to ENV['OPENLASZLO_HOME'].
-    def initialize params={}
-      @lzc = params[:compiler_script]
+    def initialize options={}
+      @lzc = options[:compiler_script]
       unless @lzc
-        home = params[:openlaszlo_home] || ENV['OPENLASZLO_HOME']
+        home = options[:openlaszlo_home] || ENV['OPENLASZLO_HOME']
         raise ":compiler_script or :openlaszlo_home must be specified" unless home
         search = lzc_directories.map{|f| File.join(home, f, 'lzc')}
         found = search.select{|f| File.exists? f}
         raise "couldn't find bin/lzc in #{search.join(' or ')}" if found.empty?
         @lzc = found.first
-        # Adjust the name for Windows
+        # Adjust the name for Windows:
         @lzc += '.bat' if windows?
       end
     end
     
     # Invokes the OpenLaszlo command-line compiler on +source_file+.
     #
-    # See OpenLaszlo.compile for a description of the +params+.
-    def compile source_file, params={}
-      default_output = File.basename(source_file, '.lzx') + '.swf'
-      output = params[:output] || default_output
+    # See OpenLaszlo.compile for a description of +options+.
+    def compile source_file, options={}
+      default_output = File.join(File.dirname(source_file),
+                                 File.basename(source_file, '.lzx') + '.swf')
+      output = options[:output] || default_output
       # TODO: could handle this case by compiling to a temporary directory and
       # renaming from there
       raise "#{source_file} and #{output} do not have the same basename." unless File.basename(source_file, '.lzx') == File.basename(output, '.swf')
       args = []
-      args << '--runtime=#{params[:runtime]}' if params[:runtime]
-      args << '--debug' if params[:debug]
-      args << '--profile' if params[:profile]
+      args << '--runtime=#{options[:runtime]}' if options[:runtime]
+      args << '--debug' if options[:debug]
+      args << '--profile' if options[:profile]
       args << "--dir '#{File.dirname output}'" unless File.dirname(source_file) == File.dirname(output)
       args << source_file
-      text = `#{@lzc} #{args.join(' ')}`
+      # The compiler writes errors to stdout, warnings to stderr
+      require "open3"
+      stdin, stdout, stderr = Open3.popen3("#{@lzc} #{args.join(' ')}")
+      text = stdout.read
       text.gsub!(/^\d+\s+/, '') # work around a bug in OpenLaszlo 3.1
       results = {:output => output}
       if text =~ /^Compilation errors occurred:\n/
         raise CompilationError.new($'.strip)
       else
-        # FIXME: doesn't work because lzc prints errors to stderr
-        results[:warnings] = text.split("\n")
+        results[:warnings] = stderr.readlines
       end
       return results
     end
@@ -222,17 +226,17 @@ EOF
   #
   # See CompileServer.compile and CommandLineCompiler.compile for additional options
   # that are specific to these compilers.
-  def self.compile source_file, params={}
-    compiler.compile source_file, params
+  def self.compile source_file, options={}
+    compiler.compile source_file, options
   end
   
-  def self.make_html source_file, params={} #:nodoc:
+  def self.make_html source_file, options={} #:nodoc:
     raise 'not really supported, for now'
-    params = {
+    options = {
       :format => 'html-object',
-      :output => File.basename(source_file, '.lzx')+'.html'}.update(params)
-    compiler.compile source_file, params
-    source_file = params[:output]
+      :output => File.basename(source_file, '.lzx')+'.html'}.update(options)
+    compiler.compile source_file, options
+    source_file = options[:output]
     s = open(source_file).read
     open(source_file, 'w') {|f| f.write s.gsub!(/\.lzx\?lzt=swf&amp;/, '.lzx.swf?')}
   end

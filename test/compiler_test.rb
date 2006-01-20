@@ -12,11 +12,9 @@ unless REQUIRED_ENV_VALUES.reject {|w| ENV[w]}.empty?
   raise "These environment variables must be set: #{REQUIRED_ENV_VALUES}.join(', ')"
 end
 
-# FIXME: should be able to put the test methods in here too
 module CompilerTestHelper
-  def super_setup
-    OpenLaszlo::compiler = nil
-    #cd File.expand_path(File.dirname(__FILE__))
+  def self.included(base)
+    base.send(:include, InstanceMethods)
   end
   
   private
@@ -24,16 +22,43 @@ module CompilerTestHelper
     File.expand_path file, File.dirname(__FILE__)
   end
   
+  def assert_same_file a, b
+    assert_equal File.expand_path(a), File.expand_path(b)
+  end
+  
   def compile file, output=nil, options={}
     file = testfile_pathname file
-    output = File.basename(file, '.lzx')+'.swf'
+    output ||= File.join(File.dirname(file), File.basename(file, '.lzx')+'.swf')
     rm_f output
+    raise "Unable to remove output file: #{output}" if File.exists?(output)
     begin
       result = OpenLaszlo::compile file, *options
+      assert_same_file output, result[:output]
       assert File.exists?(output), "#{output} does not exist"
       return result
     ensure
       rm_f output
+    end
+  end
+  
+  # Tests that are shared between CompilerServerTest and
+  # CommandLineCompilerTest.
+  module InstanceMethods
+    def test_compilation
+      result = compile 'test.lzx'
+    end
+    
+    def test_compilation_warning
+      result = compile 'compilation-warning.lzx'
+      assert_instance_of Array, result[:warnings]
+      assert_equal 2, result[:warnings].length
+      assert_match /^compilation-warning.lzx:1:36/, result[:warnings].first
+    end
+    
+    def test_compilation_error
+      ex = (compile 'compilation-error.lzx' rescue $!)
+      assert_instance_of OpenLaszlo::CompilationError, ex
+      assert_match /^compilation-error.lzx:3:1: XML document structures must start and end within the same entity./, ex.message
     end
   end
 end
@@ -42,39 +67,21 @@ class CompileServerTest < Test::Unit::TestCase
   include CompilerTestHelper
   
   def setup
-    @test_dir = File.join(ENV['OPENLASZLO_HOME'], 'ropenlaszlo-tests')
+    OpenLaszlo::compiler = nil
+    @test_dir = File.join(ENV['OPENLASZLO_HOME'], 'tmp/ropenlaszlo-tests')
     mkdir @test_dir
-    super_setup
   end
   
   def teardown
+    OpenLaszlo::compiler = nil
     rm_rf @test_dir
-  end
-    
-  def test_compilation
-    result = compile 'test.lzx'
-    assert_equal 'test.swf', result[:output]
-  end
-  
-  def test_compilation_error
-    #assert_raise(OpenLaszlo::CompilationError) {compile 'compilation-error.lzx'}
-    ex = (compile 'compilation-error.lzx' rescue $!)
-    assert_instance_of OpenLaszlo::CompilationError, ex
-    assert_match /^compilation-error.lzx:3:1: XML document structures must start and end within the same entity./, ex.message
-  end
-  
-  def test_compilation_warning
-    result = compile 'compilation-warning.lzx'
-    assert_equal 'compilation-warning.swf', result[:output]
-    assert_instance_of Array, result[:warnings]
-    assert_equal 2, result[:warnings].length
-    assert_match /^compilation-warning.lzx:1:36/, result[:warnings].first
   end
   
   private
   alias :saved_compile :compile
   
   def compile file, output=nil, options={}
+    raise "unimplemented" if output
     file = testfile_pathname file
     server_local_file = File.join @test_dir, File.basename(file)
     cp file, server_local_file
@@ -90,7 +97,7 @@ class CommandLineCompilerTest < Test::Unit::TestCase
   include CompilerTestHelper
   
   def setup
-    super_setup
+    OpenLaszlo::compiler = nil
     callcc do |exit|
       resume = nil
       ENV.with_bindings 'OPENLASZLO_URL' => nil do
@@ -104,18 +111,8 @@ class CommandLineCompilerTest < Test::Unit::TestCase
   end
   
   def teardown
+    OpenLaszlo::compiler = nil
     callcc do |continue| @teardown.call(continue) end
-  end
-  
-  def test_compilation
-    result = compile 'test.lzx'
-    assert_equal 'test.swf', result[:output]
-  end
-  
-  def test_compilation_error
-    ex = (compile 'compilation-error.lzx' rescue $!)
-    assert_instance_of OpenLaszlo::CompilationError, ex
-    assert_match /^compilation-error.lzx:3:1: XML document structures must start and end within the same entity./, ex.message
   end
 end
 

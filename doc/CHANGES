@@ -1,20 +1,23 @@
 = Change Log
 
-== Trunk
+== Version 0.4.0 (2006/01/19)
+* new feature: command-line compiler detects compilation warnings
+* bug fix: command-line compilation in qualified directory places object in same directory
 * improve rdoc
+* refactored unit tests
 
 == Version 0.3.0 (2006/01/16)
-* compilation errors and warnings
+* New feature: compilation errors and warnings
+* Bug fix: --output doesn't exist; --dir does
 * refactored test case setup
 * fixed test case directory
-* added rdoc task
-* --output doesn't exist; --dir does
+* Rakefile: added rdoc task
 * Updated installation instructions
 * Fixed rdoc formatting errors
 
 == Version 0.2.0 (2006/01/11)
 * Released as gem
-* Published to rubyforge
+* Moved to rubyforge
 * Added doc directory
 * Added test directory
 * Added examples directory

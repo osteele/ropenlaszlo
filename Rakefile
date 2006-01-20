@@ -61,7 +61,7 @@ Rake::RDocTask.new(:rdoc) do |rd|
 end
 
 desc 'Uninstall and reinstall the gem, for local testing.'
-task :test_install do
+task :reinstall do
   sh "gem uninstall ropenlaszlo"
   sh "gem install pkg/ropenlaszlo"
 end
