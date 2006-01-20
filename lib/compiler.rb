@@ -8,7 +8,7 @@
 # OpenLaszlo[openlaszlo.org] programs.
 #
 # Example:
-#   # Set up the environment to use the compile server.  The Open<tt></tt>Laszlo server
+#   # Set up the environment to use the compile server.  The OpenLaszlo server
 #   # must be running in order at this location in order for this to work.
 #   ENV['OPENLASZLO_HOME'] = '/Applications/OpenLaszlo Server 3.1'
 #   ENV['OPENLASZLO_URL'] = 'http://localhost:8080/lps-3.1'
@@ -27,7 +27,7 @@ module OpenLaszlo
   # If you don't need multiple compilers, you can use the methods in
   # the OpenLaszlo module instead.
   #
-  # The compile server is faster than CommandLineCompiler, but can only compile
+  # CompileServer is faster than CommandLineCompiler, but can only compile
   # files in the same directory as the Open<tt></tt>Laszlo SDK.
   class CompileServer
     # Options:
@@ -117,7 +117,7 @@ module OpenLaszlo
   # If you don't need multiple compilers, you can use the methods in
   # the OpenLaszlo module instead.
   #
-  # The command-line compiler is slower than CompileServer, but,
+  # CommandLineCompiler is slower than CompileServer, but,
   # unlike the server, it can compile files in any location.
   class CommandLineCompiler
     # Creates a new compiler.
@@ -216,16 +216,17 @@ EOF
   #   OpenLaszlo::compile 'hello.lzx', :debug => true
   #   OpenLaszlo::compile 'hello.lzx', :runtime => 'swf8'
   #   OpenLaszlo::compile 'hello.lzx', {:runtime => 'swf8', :debug => true}
-  #   OpenLaszlo::compile 'hello.lzx', :output => 'hello-world.swf' # server only
+  #   OpenLaszlo::compile 'hello.lzx', :output => 'hello-world.swf'
   #
   # Options are:
   # * <tt>:debug</tt> - debug mode (default false)
-  # * <tt>:output</tt> - specify the name and location for the output file (default = input_file.sub(/\.lzx$/, '.swf'))
+  # * <tt>:output</tt> - specify the name and location for the output file (default = <tt>input_file.sub(/\.lzx$/, '.swf')</tt>)
   # * <tt>:proxied</tt> - is application proxied (default true)
   # * <tt>:runtime</tt> - runtime (default swf7)
   #
-  # See CompileServer.compile and CommandLineCompiler.compile for additional options
-  # that are specific to these compilers.
+  # See CompileServer.compile and CommandLineCompiler.compile for
+  # additional options that are specific to the compilation methods in
+  # those classes.
   def self.compile source_file, options={}
     compiler.compile source_file, options
   end
