@@ -2,7 +2,7 @@
 
 ROpenLaszo is a Ruby interface to the OpenLaszlo[openlaszlo.org] compiler.  It allows you to compile Open<tt></tt>Laszlo programs from within Ruby, in order to integrate Open<tt></tt>Laszlo development into Rake or Rails applications.
 
-If you are using Open<tt></tt>Laszlo with Ruby on Rails, you probably want the {OpenLaszlo Rails plugin}[laszlo-plugin.rubyforge.org] instead.
+If you are using Open<tt></tt>Laszlo with Ruby on Rails, you probably want the {OpenLaszlo Rails plugin}[laszlo-plugin.rubyforge.org] as well.
 
 OpenLaszlo[openlaszlo.org] programs are written in XML with embedded JavaScript, and compiled into Flash (swf) binary files, or DHTML.  (As of this writing, the DHTML target is in pre-beta form.)  The APIs in this library make it easy for Ruby code to invoke the Open<tt></tt>Laszlo compiler.  For example, if hello.lzx contains the following text:
   <canvas>
@@ -39,6 +39,8 @@ You can turn this into a Rake task that will compile any Open<tt></tt>Laszlo sou
 
 3:: (Optional)  Set your +OPENLASZLO_URL+ environment variable to the web location of the Open<tt></tt>Laszlo server; for example, <tt>http</tt><tt>://localhost:8080/lps-3.1</tt>.  If you omit this step, the module will use the command line compiler, which is slower but is not limited to compiling files inside of +OPENLASZLO_HOME+.
 
+<b>Note:</b> The command-line compiler is broken in the Windows version of Open<tt></tt>Laszlo 3.1.1.  If you are running Windows, step (3) is required.  ({OpenLaszlo bug 1428}[http://www.openlaszlo.org/jira/browse/LPP-1428])
+
 == Additional Resources
 
 * The {OpenLaszlo web site}[openlaszlo.org] is a rich source of information about the Open<tt></tt>Laszlo platform.  It includes links to the wiki, mailing lists, and forums.
@@ -48,6 +50,8 @@ You can turn this into a Rake task that will compile any Open<tt></tt>Laszlo sou
 * The {OpenLaszlo Rails plugin}[laszlo-plugin.rubyforge.org] provides generators and scaffolding for using Open<tt></tt>Laszlo with Ruby on Rails.
 
 * {This OpenLaszlo Blog entry}[weblog.openlaszlo.org/archives/2006/01/deploying-openlaszlo-applications-with-rake/] has additional information and some examples of using ROpenLaszlo in a Rakefile.
+
+* The RubyForge project page is here[http://rubyforge.org/projects/ropenlaszlo/].
 
 == License
 

@@ -133,11 +133,10 @@ module OpenLaszlo
       unless @lzc
         home = options[:openlaszlo_home] || ENV['OPENLASZLO_HOME']
         raise ":compiler_script or :openlaszlo_home must be specified" unless home
-        search = lzc_directories.map{|f| File.join(home, f, 'lzc')}
+        search = bin_directories.map{|f| File.join(home, f, 'lzc')}
         found = search.select{|f| File.exists? f}
-        raise "couldn't find bin/lzc in #{search.join(' or ')}" if found.empty?
+        raise "couldn't find bin/lzc in #{bin_directories.join(' or ')}" if found.empty?
         @lzc = found.first
-        # Adjust the name for Windows:
         @lzc += '.bat' if windows?
       end
     end
@@ -149,8 +148,6 @@ module OpenLaszlo
       default_output = File.join(File.dirname(source_file),
                                  File.basename(source_file, '.lzx') + '.swf')
       output = options[:output] || default_output
-      # TODO: could handle this case by compiling to a temporary directory and
-      # renaming from there
       raise "#{source_file} and #{output} do not have the same basename." unless File.basename(source_file, '.lzx') == File.basename(output, '.swf')
       args = []
       args << '--runtime=#{options[:runtime]}' if options[:runtime]
@@ -158,27 +155,35 @@ module OpenLaszlo
       args << '--profile' if options[:profile]
       args << "--dir '#{File.dirname output}'" unless File.dirname(source_file) == File.dirname(output)
       args << source_file
-      # The compiler writes errors to stdout, warnings to stderr
-      require "open3"
-      stdin, stdout, stderr = Open3.popen3("#{@lzc} #{args.join(' ')}")
-      text = stdout.read
-      text.gsub!(/^\d+\s+/, '') # work around a bug in OpenLaszlo 3.1
-      results = {:output => output}
-      if text =~ /^Compilation errors occurred:\n/
-        raise CompilationError.new($'.strip)
-      else
-        results[:warnings] = stderr.readlines
+      command = "\"#{@lzc}\" #{args.join(' ')}"
+      ENV['LPS_HOME'] ||= ENV['OPENLASZLO_HOME']
+      begin
+        #raise NotImplementedError --- for testing Windows
+        require "open3"
+        # The compiler writes errors to stdout, warnings to stderr
+        stdin, stdout, stderr = Open3.popen3(command)
+        errors = stdout.read
+        warnings = stderr.readlines
+      rescue NotImplementedError
+        # Windows doesn't have popen
+        errors = `#{command}`
+        warnings = []
       end
+      errors.gsub!(/^\d+\s+/, '') # work around a bug in OpenLaszlo 3.1
+      if errors =~ /^Compilation errors occurred:\n/
+        raise CompilationError.new($'.strip)
+      end
+      results = {:output => output, :warnings => warnings}
       return results
     end
     
     private
     
     # Locations in which to look for the lzc script, relative to OPENLASZLO_HOME
-    def lzc_directories
+    def bin_directories
       [# binary distro location
         'bin',
-        # binary distro location
+        # source distro location
         'WEB-INF/lps/server/bin'
       ]
     end

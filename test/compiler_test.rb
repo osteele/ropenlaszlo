@@ -69,7 +69,7 @@ class CompileServerTest < Test::Unit::TestCase
   def setup
     OpenLaszlo::compiler = nil
     @test_dir = File.join(ENV['OPENLASZLO_HOME'], 'tmp/ropenlaszlo-tests')
-    mkdir @test_dir
+    mkdir_p @test_dir
   end
   
   def teardown

@@ -1,5 +1,10 @@
 = Change Log
 
+== Version 0.4.1 (2006/01/25)
+* bug fix: don't use popen on Windows
+* bug fix: default LPS_HOME from OPENLASZLO_HOME
+* added note about OpenLaszlo windows bug
+
 == Version 0.4.0 (2006/01/19)
 * new feature: command-line compiler detects compilation warnings
 * bug fix: command-line compilation in qualified directory places object in same directory

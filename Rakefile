@@ -12,7 +12,7 @@ require 'rake/rdoctask'
 require 'rake/clean'
 
 PKG_NAME = "ropenlaszlo"
-PKG_VERSION = '0.4.0'
+PKG_VERSION = '0.4.1'
 RUBYFORGE_PROJECT = 'ropenlaszlo'
 RUBYFORGE_USER = ENV['RUBYFORGE_USER']
 
@@ -56,7 +56,7 @@ Rake::RDocTask.new(:rdoc) do |rd|
   rd.rdoc_dir = 'rdoc'
   rd.options += spec.rdoc_options.to_a.flatten
   rd.rdoc_files.include 'doc/README' # neceessary for --main to work
-  rd.rdoc_files.include spec.files
+  rd.rdoc_files.include spec.files-['doc/README']
   rd.rdoc_files.exclude 'test/*'
 end
 
@@ -70,7 +70,7 @@ task :clean do
   rm_rf 'pkg'
 end
 
-task :publish_rdoc do
+task :publish_rdoc => :rdoc do
   sh" scp -r rdoc/* #{RUBYFORGE_USER}@rubyforge.org:/var/www/gforge-projects/#{RUBYFORGE_PROJECT}"
 end
 
