@@ -7,7 +7,7 @@ require File.join(File.dirname(__FILE__), 'test_utils.rb')
 
 include FileUtils
 
-REQUIRED_ENV_VALUES = %w{OPENLASZLO_HOME OPENLASZLO_HOME}
+REQUIRED_ENV_VALUES = %w{OPENLASZLO_HOME OPENLASZLO_URL}
 unless REQUIRED_ENV_VALUES.reject {|w| ENV[w]}.empty?
   raise "These environment variables must be set: #{REQUIRED_ENV_VALUES}.join(', ')"
 end
