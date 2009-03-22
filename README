@@ -12,14 +12,19 @@ OpenLaszlo[openlaszlo.org] programs are written in XML with embedded JavaScript,
   </canvas>
 then the following Ruby code can be used to create a file 'hello.swf' which can be executed in a browser or placed on a web site:
   require 'rubygems'
-  require 'ropenlaszlo'
-  OpenLaszlo::compile 'hello.lzx'
+  require 'openlaszlo'
+  OpenLaszlo::compile 'hello.lzx' # creates hello.swf
 
 You can turn this into a Rake task that will compile any Open<tt></tt>Laszlo source file:
   rule '.swf' => '.lzx' do |t|
     puts "Compiling #{t.source} => #{t.name}" if verbose
     OpenLaszlo::compile t.source, :output => t.name
   end
+
+The following includes such a task:
+  require 'openlaszlo'
+  load 'tasks/openlaszlo.rake'
+  # defines a pattern *.lzx -> *.swf
 
 == Requirements
 
@@ -52,6 +57,13 @@ You can turn this into a Rake task that will compile any Open<tt></tt>Laszlo sou
 * {This OpenLaszlo Blog entry}[weblog.openlaszlo.org/archives/2006/01/deploying-openlaszlo-applications-with-rake/] has additional information and some examples of using ROpenLaszlo in a Rakefile.
 
 * The RubyForge project page is here[http://rubyforge.org/projects/ropenlaszlo/].
+
+
+== Author
+
+Oliver Steele
+steele@osteele.com
+
 
 == License
 

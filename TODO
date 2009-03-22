@@ -1,21 +1,20 @@
 = ROpenLaszlo Project -- To Do List
 
 == Features
-* Add rake task file
-* Compile server: allow use of proxy?
-* Compile server: temporarily copy files into webapp directory
+* Compiler server: test whether allow_links=true
+* Compile server: add alias to source directory
+* Dependency tracking: switch to hpricot
 * compile_string
-* Dependency tracking
 * query compiler version
 
 == Unit Tests
+* "Runtime" option
+* Fallback to command-line compiler
 * Compiler parameters
 * Missing source file
 * Unreachable server
 * Invalid OPENLASZLO_HOME
 
 == Corners
-* invalid parameters
 * server isn't running
 * thinks lps-dev/foo is in lps/ directory
-

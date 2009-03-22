@@ -1,17 +1,30 @@
 = Change Log
 
-== Version 0.4.1 (2006/01/25)
+== Version 0.5 (2008-04-01)
+* compatible with OpenLaszlo 4.0
+* reorganize directory structure
+* new rake task file
+* follow symbolic links
+* fall back to cmd-line compiler if source file is not in web path
+* raise error when lzc is not executable
+* change default runtime to swf8
+* switch to echoe for packaging
+
+
+== Version 0.4.1 (2006-01-25)
 * bug fix: don't use popen on Windows
 * bug fix: default LPS_HOME from OPENLASZLO_HOME
 * added note about OpenLaszlo windows bug
 
-== Version 0.4.0 (2006/01/19)
+
+== Version 0.4.0 (2006-01-19)
 * new feature: command-line compiler detects compilation warnings
 * bug fix: command-line compilation in qualified directory places object in same directory
 * improve rdoc
 * refactored unit tests
 
-== Version 0.3.0 (2006/01/16)
+
+== Version 0.3.0 (2006-01-16)
 * New feature: compilation errors and warnings
 * Bug fix: --output doesn't exist; --dir does
 * refactored test case setup
@@ -20,14 +33,16 @@
 * Updated installation instructions
 * Fixed rdoc formatting errors
 
-== Version 0.2.0 (2006/01/11)
+
+== Version 0.2.0 (2006-01-11)
 * Released as gem
 * Moved to rubyforge
 * Added doc directory
 * Added test directory
 * Added examples directory
 
-== Version 0.1.0 (2006/01/04)
+
+== Version 0.1.0 (2006-01-04)
 * Initial release
 * Published to osteele.com
 * Announced on weblog.openlaszlo.org
