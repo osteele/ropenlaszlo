@@ -6,19 +6,41 @@
 # MIT-LICENSE for details.
 
 require 'rubygems'
-require 'rake/gempackagetask'
 require 'rake/testtask'
 require 'rake/rdoctask'
 require 'rake/clean'
 
 PKG_NAME = "ropenlaszlo"
-PKG_VERSION = '0.4.1'
 RUBYFORGE_PROJECT = 'ropenlaszlo'
-RUBYFORGE_USER = ENV['RUBYFORGE_USER']
 
-PKG_FILES = FileList['{lib,doc,test}/**/*'].exclude('.svn')
+DOC_FILES = FileList['README.rdoc', 'MIT-LICENSE', 'CHANGES', 'TODO']
+PKG_FILES = FileList['{lib,test}/**/*'].exclude('.svn') + DOC_FILES
 
 CLEAN.include FileList['test/*.swf']
+
+begin
+  require 'jeweler'
+  Jeweler::Tasks.new do |s|
+    s.name = PKG_NAME
+    s.rubyforge_project = RUBYFORGE_PROJECT
+    s.files = PKG_FILES
+    s.summary = "Ruby interface to the OpenLaszlo compiler."
+    s.homepage = 'http://github.com/osteele/ropenlaszlo'
+    s.author = 'Oliver Steele'
+    s.email = 'steele@osteele.com'
+    s.require_path = 'lib'
+    s.description = <<-EOF
+    ROpenLaszlo is an interface to the OpenLaszlo compiler.
+EOF
+    s.has_rdoc = true
+    s.extra_rdoc_files = DOC_FILES
+    s.rdoc_options << '--title' << "ROpenLaszlo: #{s.summary.sub(/.$/,'')}" <<
+      '--exclude' << 'test/.*'
+    '--main' << 'README.rdoc'
+  end
+rescue LoadError
+  puts "Jeweler not available. Install it with: sudo gem install technicalpickles-jeweler -s http://gems.github.com"
+end
 
 Rake::TestTask.new(:test) do |t|
   t.libs << 'lib'
@@ -26,37 +48,12 @@ Rake::TestTask.new(:test) do |t|
   t.verbose = true
 end
 
-spec = Gem::Specification.new do |s|
-  s.name = PKG_NAME
-  s.version = PKG_VERSION
-  s.rubyforge_project = RUBYFORGE_PROJECT
-  s.files = PKG_FILES
-  s.summary = "Ruby interface to OpenLaszlo."
-  s.homepage = 'http://ropenlaszlo.rubyforge.org'
-  s.author = 'Oliver Steele'
-  s.email = 'steele@osteele.com'
-  s.require_path = 'lib'
-  s.description = <<-EOF
-    ROpenLaszlo is an interface to the OpenLaszlo compiler.
-EOF
-  s.has_rdoc = true
-  s.extra_rdoc_files = FileList['doc/*']
-  s.rdoc_options << '--title' << "ROpenLaszlo: #{s.summary.sub(/.$/,'')}" <<
-    '--exclude' << 'test/.*'
-    '--main' << 'doc/README'
-end
-
-Rake::GemPackageTask.new(spec) do |pkg|
-  pkg.need_zip = true
-  pkg.need_tar = true
-end
-
 desc 'Generate documentation for the plugin.'
 Rake::RDocTask.new(:rdoc) do |rd|
   rd.rdoc_dir = 'rdoc'
-  rd.options += spec.rdoc_options.to_a.flatten
+  #rd.options += spec.rdoc_options.to_a.flatten
   rd.rdoc_files.include 'doc/README' # neceessary for --main to work
-  rd.rdoc_files.include spec.files-['doc/README']
+  rd.rdoc_files.include FileList['lib/**/*.rb']
   rd.rdoc_files.exclude 'test/*'
 end
 

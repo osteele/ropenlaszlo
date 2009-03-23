@@ -15,7 +15,7 @@ then the following Ruby code can be used to create a file 'hello.swf' which can 
   require 'openlaszlo'
   OpenLaszlo::compile 'hello.lzx' # creates hello.swf
 
-You can turn this into a Rake task that will compile any Open<tt></tt>Laszlo source file:
+You can turn this snippet into a Rake task that will compile any Open<tt></tt>Laszlo source file:
   rule '.swf' => '.lzx' do |t|
     puts "Compiling #{t.source} => #{t.name}" if verbose
     OpenLaszlo::compile t.source, :output => t.name
@@ -37,10 +37,10 @@ The following includes such a task:
 0:: Download and install the {OpenLaszlo SDK}[openlaszlo.org]
 
 1: Install this gem
-  > gem install ropenlaszlo
+  $ gem install osteele-ropenlaszlo -s http://gems.github.com
 
 2:: Set your +OPENLASZLO_HOME+ environment variable to the directory that contains the {OpenLaszlo SDK}[openlaszlo.org].  If the following prints something, you've got it right:
-  > grep Laszlo "$OPENLASZLO_HOME/README.txt"
+  grep Laszlo "$OPENLASZLO_HOME/README.txt"
 
 3:: (Optional)  Set your +OPENLASZLO_URL+ environment variable to the web location of the Open<tt></tt>Laszlo server; for example, <tt>http</tt><tt>://localhost:8080/lps-3.1</tt>.  If you omit this step, the module will use the command line compiler, which is slower but is not limited to compiling files inside of +OPENLASZLO_HOME+.
 
@@ -67,6 +67,7 @@ steele@osteele.com
 
 == License
 
-ROpenLaszlo is copyright (c) 2006 Oliver Steele.  It is open-source software, and may be redistributed
-under the terms of the MIT license. The text of this licence is included in the
-ROpenLaszlo distribution, under the +doc+ subdirectory.
+ROpenLaszlo is copyright (c) 2006 - 2009 by Oliver Steele.  It is
+open-source software, and may be redistributed under the terms of the
+MIT license. The text of this licence is included in the ROpenLaszlo
+distribution.

@@ -32,10 +32,12 @@ module OpenLaszlo
   # files in the same directory as the Open<tt></tt>Laszlo SDK.
   class CompileServer
     # Options:
-    # * <tt>:openlaszlo_home</tt> - filesystem location of the Open<tt></tt>Laszlo SDK.  Defaults to EVN['OPENLASZLO_HOME']
+    # * <tt>:openlaszlo_home</tt> - filesystem location of the Open<tt></tt>Laszlo SDK.  Defaults to ENV['OPENLASZLO_HOME']
     # * <tt>:server_uri</tt> - the URI of the server.  Defaults to ENV['OPENLASZLO_URL'] if this is specified, otherwise to 'http://localhost:8080/lps-dev'.
     def initialize(options={})
       @home = options[:home] || ENV['OPENLASZLO_HOME']
+      dirs = Dir[File.join(@home, 'Server', 'lps-*', 'WEB-INF')]
+      @home = File.dirname(dirs.first) if dirs.any?
       @base_url = options[:server_uri] || ENV['OPENLASZLO_URL'] || 'http://localhost:8080/lps-dev'
     end
 
@@ -47,8 +49,9 @@ module OpenLaszlo
     # * <tt>:format</tt> - request type (default 'swf')
     # See OpenLaszlo.compile for a description of +options+.
     def compile(source_file, options={})
-      mtime = File.mtime(source_file)
-      output = options[:output] || "#{File.expand_path(File.join(File.dirname(source_file), File.basename(source_file, '.lzx')))}.swf"
+      mtime = File.mtime source_file
+      runtime = options[:runtime] || 'swf8'
+      output = options[:output] || "#{File.expand_path(File.join(File.dirname(source_file), File.basename(source_file, '.lzx')))}.lzr=#{runtime}.swf"
       compile_object(source_file, output, options)
       results = request_metadata_for(source_file, options)
       raise "Race condition: #{source_file} was modified during compilation" if mtime != File.mtime(source_file)
@@ -62,7 +65,7 @@ module OpenLaszlo
       options = {}.update(options).update(:output => object)
       request(source_file, options)
     end
-
+    
     def request_metadata_for(source_file, options={})
       results = {}
       options = {}.update(options).update(:format => 'canvas-xml', :output => nil)
@@ -74,7 +77,7 @@ module OpenLaszlo
       end
       return results
     end
-
+    
     def request(source_file, options={})
       output = options[:output]
       require 'net/http'
@@ -142,7 +145,16 @@ module OpenLaszlo
     # * <tt>:openlaszlo_home</tt> - the home directory of the Open<tt></tt>Laszlo SDK.
     # This defaults to ENV['OPENLASZLO_HOME'].
     def initialize(options={})
-      @lzc = options[:compiler_script] || self.class.executable_path(options)
+      @lzc = options[:compiler_script]
+      unless @lzc
+        home = options[:openlaszlo_home] || ENV['OPENLASZLO_HOME']
+        raise ":compiler_script or :openlaszlo_home must be specified" unless home
+        search = bin_directories.map{|f| File.join(home, f, 'lzc')}
+        found = search.select{|f| File.exists? f}
+        raise "couldn't find bin/lzc in #{bin_directories.join(' or ')}" if found.empty?
+        @lzc = found.first
+        @lzc += '.bat' if windows?
+      end
     end
     
     def self.executable_path(options={})
@@ -161,10 +173,12 @@ module OpenLaszlo
     #
     # See OpenLaszlo.compile for a description of +options+.
     def compile(source_file, options={})
+      runtime = options[:runtime] || 'swf8'
+      output_suffix = ".lzr=#{runtime}.swf"
       default_output = File.join(File.dirname(source_file),
-                                 File.basename(source_file, '.lzx') + '.swf')
+                                 File.basename(source_file, '.lzx') + output_suffix)
       output = options[:output] || default_output
-      raise "#{source_file} and #{output} do not have the same basename." unless File.basename(source_file, '.lzx') == File.basename(output, '.swf')
+      raise "#{source_file} and #{output} do not have the same basename." unless File.basename(source_file, '.lzx') == File.basename(output, output_suffix)
       args = []
       args << "--runtime=#{options[:runtime]}" if options[:runtime]
       args << '--debug' if options[:debug]
@@ -180,12 +194,7 @@ module OpenLaszlo
         stdin, stdout, stderr = Open3.popen3(command)
         errors = stdout.read
         warnings = stderr.readlines
-        raise warnings.join("\n") if warnings.first =~ /^sh:/
-        # OpenLaszlo 4.0:
-        if warnings.first =~ /Compiling:.* to (\S+)/
-          warnings.shift
-          File.rename($1, output) if File.exists?($1)
-        end
+        warnings.shift if warnings.first and warnings.first =~ /^Compiling:/
       rescue NotImplementedError
         # Windows doesn't have popen
         errors = `#{command}`
@@ -231,7 +240,7 @@ EOF
   end
 
   # Sets the default compiler for future invocations of OpenLaszlo.compile.
-  def self.compiler= compiler
+  def self.compiler=(compiler)
     @compiler = compiler
   end
 
@@ -261,13 +270,13 @@ EOF
   rescue InvalidSourceLocation
     CommandLineCompiler.new.compile(source_file, options)
   end
-
+  
   def self.make_html(source_file, options={}) #:nodoc:
     raise 'not really supported, for now'
     options = {
       :format => 'html-object',
       :output => File.basename(source_file, '.lzx')+'.html'}.update(options)
-    compiler.compile source_file, options
+    compiler.compile(source_file, options)
     source_file = options[:output]
     s = open(source_file).read
     open(source_file, 'w') do |f|

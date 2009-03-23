@@ -18,21 +18,21 @@ module CompilerTestHelper
   end
   
   private
-  def testfile_pathname file
-    File.expand_path file, File.dirname(__FILE__)
+  def testfile_pathname(file)
+    return File.expand_path(file, File.dirname(__FILE__))
   end
   
-  def assert_same_file a, b
+  def assert_same_file(a, b)
     assert_equal File.expand_path(a), File.expand_path(b)
   end
   
-  def compile file, output=nil, options={}
-    file = testfile_pathname file
-    output ||= File.join(File.dirname(file), File.basename(file, '.lzx')+'.swf')
+  def compile(file, output=nil, options={})
+    file = testfile_pathname(file)
+    output ||= File.join(File.dirname(file), File.basename(file, '.lzx')+'.lzr=swf8.swf')
     rm_f output
     raise "Unable to remove output file: #{output}" if File.exists?(output)
     begin
-      result = OpenLaszlo::compile file, *options
+      result = OpenLaszlo::compile(file, *options)
       assert_same_file output, result[:output]
       assert File.exists?(output), "#{output} does not exist"
       return result
@@ -51,14 +51,14 @@ module CompilerTestHelper
     def test_compilation_warning
       result = compile 'compilation-warning.lzx'
       assert_instance_of Array, result[:warnings]
-      assert_equal 2, result[:warnings].length
+      assert_equal 1, result[:warnings].length
       assert_match /^compilation-warning.lzx:1:36/, result[:warnings].first
     end
     
     def test_compilation_error
       ex = (compile 'compilation-error.lzx' rescue $!)
       assert_instance_of OpenLaszlo::CompilationError, ex
-      assert_match /^compilation-error.lzx:3:1: XML document structures must start and end within the same entity./, ex.message
+      assert_match /^compilation-error.lzx:3:1: XML document structures must start and end within the same entity\./, ex.message
     end
   end
 end
@@ -68,7 +68,10 @@ class CompileServerTest < Test::Unit::TestCase
   
   def setup
     OpenLaszlo::compiler = nil
-    @test_dir = File.join(ENV['OPENLASZLO_HOME'], 'tmp/ropenlaszlo-tests')
+    home = ENV['OPENLASZLO_HOME']
+    dirs = Dir[File.join(home, 'Server', 'lps-*', 'WEB-INF')]
+    home = File.dirname(dirs.first) if dirs.any?
+    @test_dir = File.join(home, 'tmp/ropenlaszlo-tests')
     mkdir_p @test_dir
   end
   
@@ -80,13 +83,13 @@ class CompileServerTest < Test::Unit::TestCase
   private
   alias :saved_compile :compile
   
-  def compile file, output=nil, options={}
+  def compile(file, output=nil, options={})
     raise "unimplemented" if output
     file = testfile_pathname file
-    server_local_file = File.join @test_dir, File.basename(file)
+    server_local_file = File.join(@test_dir, File.basename(file))
     cp file, server_local_file
     begin
-      saved_compile server_local_file, output, options
+      saved_compile(server_local_file, output, options)
     ensure
       rm_f server_local_file
     end
