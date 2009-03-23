@@ -2,7 +2,7 @@
 
 Gem::Specification.new do |s|
   s.name = %q{ropenlaszlo}
-  s.version = "0.6.1"
+  s.version = "0.6.2"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Oliver Steele"]
@@ -10,7 +10,7 @@ Gem::Specification.new do |s|
   s.description = %q{ROpenLaszlo is an interface to the OpenLaszlo compiler.}
   s.email = %q{steele@osteele.com}
   s.extra_rdoc_files = ["README.rdoc", "MIT-LICENSE", "CHANGES.rdoc", "TODO.rdoc"]
-  s.files = ["lib/openlaszlo", "lib/openlaszlo/applet.rb", "lib/openlaszlo/compiler.rb", "lib/openlaszlo/compiler.rb.orig", "lib/openlaszlo.rb", "lib/ropenlaszlo.rb", "lib/tasks", "lib/tasks/openlaszlo.rake", "test/compilation-error.lzx", "test/compilation-warning.lzx", "test/compiler_test.rb", "test/tasks", "test/tasks/Rakefile", "test/tasks/test.lzx", "test/tasks/test.swf", "test/test.lzx", "test/test_utils.rb", "README.rdoc", "MIT-LICENSE", "CHANGES.rdoc", "TODO.rdoc"]
+  s.files = ["lib/openlaszlo", "lib/openlaszlo/applet.rb", "lib/openlaszlo/compiler.rb", "lib/openlaszlo.rb", "lib/ropenlaszlo.rb", "lib/tasks", "lib/tasks/openlaszlo.rake", "test/compilation-error.lzx", "test/compilation-warning.lzx", "test/compiler_test.rb", "test/tasks", "test/tasks/Rakefile", "test/tasks/test.lzx", "test/tasks/test.swf", "test/test.lzx", "test/test_utils.rb", "README.rdoc", "MIT-LICENSE", "CHANGES.rdoc", "TODO.rdoc"]
   s.has_rdoc = true
   s.homepage = %q{http://github.com/osteele/ropenlaszlo}
   s.rdoc_options = ["--title", "ROpenLaszlo: Ruby interface to the OpenLaszlo compiler", "--exclude", "test/.*", "--inline-source", "--charset=UTF-8"]
