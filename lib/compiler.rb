@@ -35,6 +35,8 @@ module OpenLaszlo
     # * <tt>:server_uri</tt> - the URI of the server.  Defaults to ENV['OPENLASZLO_URL'] if this is specified, otherwise to 'http://localhost:8080/lps-dev'.
     def initialize options={}
       @home = options[:home] || ENV['OPENLASZLO_HOME']
+      dirs = Dir[File.join(@home, 'Server', 'lps-*', 'WEB-INF')]
+      @home = File.dirname(dirs.first) if dirs.any?
       @base_url = options[:server_uri] || ENV['OPENLASZLO_URL'] || 'http://localhost:8080/lps-dev'
     end
     
@@ -47,9 +49,10 @@ module OpenLaszlo
     # See OpenLaszlo.compile for a description of +options+.
     def compile source_file, options={}
       mtime = File.mtime source_file
-      output = options[:output] || "#{File.expand_path(File.join(File.dirname(source_file), File.basename(source_file, '.lzx')))}.swf"
-      compile_object source_file, output, options
-      results = request_metadata_for source_file, options
+      runtime = options[:runtime] || 'swf8'
+      output = options[:output] || "#{File.expand_path(File.join(File.dirname(source_file), File.basename(source_file, '.lzx')))}.lzr=#{runtime}.swf"
+      compile_object(source_file, output, options)
+      results = request_metadata_for(source_file, options)
       raise "Race condition: #{source_file} was modified during compilation" if mtime != File.mtime(source_file)
       results[:output] = output
       raise CompilationError.new(results[:error]) if results[:error]
@@ -144,11 +147,13 @@ module OpenLaszlo
     # Invokes the OpenLaszlo command-line compiler on +source_file+.
     #
     # See OpenLaszlo.compile for a description of +options+.
-    def compile source_file, options={}
+    def compile(source_file, options={})
+      runtime = options[:runtime] || 'swf8'
+      output_suffix = ".lzr=#{runtime}.swf"
       default_output = File.join(File.dirname(source_file),
-                                 File.basename(source_file, '.lzx') + '.swf')
+                                 File.basename(source_file, '.lzx') + output_suffix)
       output = options[:output] || default_output
-      raise "#{source_file} and #{output} do not have the same basename." unless File.basename(source_file, '.lzx') == File.basename(output, '.swf')
+      raise "#{source_file} and #{output} do not have the same basename." unless File.basename(source_file, '.lzx') == File.basename(output, output_suffix)
       args = []
       args << '--runtime=#{options[:runtime]}' if options[:runtime]
       args << '--debug' if options[:debug]
@@ -164,6 +169,7 @@ module OpenLaszlo
         stdin, stdout, stderr = Open3.popen3(command)
         errors = stdout.read
         warnings = stderr.readlines
+        warnings.shift if warnings.first and warnings.first =~ /^Compiling:/
       rescue NotImplementedError
         # Windows doesn't have popen
         errors = `#{command}`
