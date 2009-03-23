@@ -1,5 +1,9 @@
 = Change Log
 
+== Version 0.5.1 (2009/03/22)
+* update for compatibility with OpenLaszlo 4.x
+* move to github
+
 == Version 0.5 (2009/03/22)
 * update for compatibility with OpenLaszlo 4.x
 * move to github

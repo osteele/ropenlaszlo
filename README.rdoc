@@ -32,8 +32,7 @@ You can turn this snippet into a Rake task that will compile any Open<tt></tt>La
 0:: Download and install the {OpenLaszlo SDK}[openlaszlo.org]
 
 1: Install this gem
-  $ gem sources -a http://gems.github.com
-  $ gem install osteele-ropenlaszlo
+  $ gem install osteele-ropenlaszlo -s http://gems.github.com
 
 2:: Set your +OPENLASZLO_HOME+ environment variable to the directory that contains the {OpenLaszlo SDK}[openlaszlo.org].  If the following prints something, you've got it right:
   grep Laszlo "$OPENLASZLO_HOME/README.txt"
