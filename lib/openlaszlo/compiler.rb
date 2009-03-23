@@ -149,8 +149,8 @@ module OpenLaszlo
       unless @lzc
         home = options[:openlaszlo_home] || ENV['OPENLASZLO_HOME']
         raise ":compiler_script or :openlaszlo_home must be specified" unless home
-        search = bin_directories.map{|f| File.join(home, f, 'lzc')}
-        found = search.select{|f| File.exists? f}
+        search = bin_directories.map {|f| File.join(home, f, 'lzc')}
+        found = search.select {|f| File.exists? f}
         raise "couldn't find bin/lzc in #{bin_directories.join(' or ')}" if found.empty?
         @lzc = found.first
         @lzc += '.bat' if windows?
@@ -183,7 +183,8 @@ module OpenLaszlo
       args << "--runtime=#{options[:runtime]}" if options[:runtime]
       args << '--debug' if options[:debug]
       args << '--profile' if options[:profile]
-      args << "--dir '#{File.dirname output}'" unless File.dirname(source_file) == File.dirname(output)
+      args << "--dir '#{File.dirname output}'" unless
+        File.dirname(source_file) == File.dirname(output)
       args << source_file
       command = "\"#{@lzc}\" #{args.join(' ')}"
       ENV['LPS_HOME'] ||= ENV['OPENLASZLO_HOME']
@@ -211,7 +212,7 @@ module OpenLaszlo
     private
 
     # Locations in which to look for the lzc script, relative to OPENLASZLO_HOME
-    def self.bin_directories
+    def bin_directories
       [# binary distro location
         'bin',
         # source distro location
@@ -219,7 +220,7 @@ module OpenLaszlo
       ]
     end
 
-    def self.windows?
+    def windows?
       RUBY_PLATFORM =~ /win/ and not RUBY_PLATFORM =~ /darwin/
     end
   end
