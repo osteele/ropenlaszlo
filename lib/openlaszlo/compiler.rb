@@ -70,10 +70,12 @@ module OpenLaszlo
       options = {}.update(options).update(:format => 'canvas-xml', :output => nil)
       results = {:compiler => self}
       text = request(source_file, options)
+      entities = {'lt' => '<', 'gt' => '>', 'quot' => '"', 'amp' => '&'}
       if text =~ %r{<warnings>(.*?)</warnings>}m
-        results[:warnings] = $1.scan(%r{<error>\s*(.*?)\s*</error>}m).map { |w| w.first }
+        results[:warnings] = $1.scan(%r{<error>\s*(.*?)\s*</error>}m).
+          map { |w| w.first.gsub(/&(\w+);/) { |s| entities[$0] || s } }
       elsif text !~ %r{<canvas>} && text =~ %r{<pre>Error:\s*(.*?)\s*</pre>}m
-        results[:error] = $1
+        results[:error] = $1.gsub(/&(\w+);/) { |s| entities[$0] || s }
       end
       return results
     end
@@ -207,7 +209,7 @@ module OpenLaszlo
       if errors =~ /^Compilation errors occurred:\n/
         raise CompilationError.new($'.strip)
       end
-      results = {:output => output, :warnings => warnings, :compiler => compiler}
+      results = {:output => output, :warnings => warnings, :compiler => self}
       return results
     end
 

@@ -1,12 +1,13 @@
 = Change Log
 
 == Version 0.6.2 (2009-03-23)
-* return which compiler was used
+* unquote html entities in errors and warnings
 
+== Version 0.6.2 (2009-03-23)
+* return which compiler was used
 
 == Version 0.6.1 (2009-03-23)
 * rename command-line compiler output file
-
 
 == Version 0.6 (2009-03-23)
 * follow symbolic links
