@@ -47,10 +47,10 @@ module OpenLaszlo
     # * <tt>:format</tt> - request type (default 'swf')
     # See OpenLaszlo.compile for a description of +options+.
     def compile(source_file, options={})
-      mtime = File.mtime source_file
+      mtime = File.mtime(source_file)
       output = options[:output] || "#{File.expand_path(File.join(File.dirname(source_file), File.basename(source_file, '.lzx')))}.swf"
-      compile_object source_file, output, options
-      results = request_metadata_for source_file, options
+      compile_object(source_file, output, options)
+      results = request_metadata_for(source_file, options)
       raise "Race condition: #{source_file} was modified during compilation" if mtime != File.mtime(source_file)
       results[:output] = output
       raise CompilationError.new(results[:error]) if results[:error]
@@ -60,13 +60,13 @@ module OpenLaszlo
     private
     def compile_object(source_file, object, options={})
       options = {}.update(options).update(:output => object)
-      request source_file, options
+      request(source_file, options)
     end
 
     def request_metadata_for(source_file, options={})
       results = {}
       options = {}.update(options).update(:format => 'canvas-xml', :output => nil)
-      text = request source_file, options
+      text = request(source_file, options)
       if text =~ %r{<warnings>(.*?)</warnings>}m
         results[:warnings] = $1.scan(%r{<error>\s*(.*?)\s*</error>}m).map { |w| w.first }
       elsif text !~ %r{<canvas>} && text =~ %r{<pre>Error:\s*(.*?)\s*</pre>}m
@@ -80,7 +80,7 @@ module OpenLaszlo
       require 'net/http'
       require 'uri'
       # assert that pathname is relative to LPS home:
-      absolute_path = File.expand_path source_file
+      absolute_path = File.expand_path(source_file)
       server_relative_path = nil
       begin
         # follow links
@@ -106,7 +106,7 @@ module OpenLaszlo
       query = options.map { |k,v| "#{k}=#{v}" unless v.nil? }.compact.join('&')
       url = "#{@base_url}#{server_relative_path}"
       url += "?#{query}" unless query.empty?
-      Net::HTTP.get_response URI.parse(url) do |response|
+      Net::HTTP.get_response(URI.parse(url)) do |response|
         case response
         when Net::HTTPOK
           if output
