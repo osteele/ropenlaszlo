@@ -31,8 +31,8 @@ spec = Gem::Specification.new do |s|
   s.version = PKG_VERSION
   s.rubyforge_project = RUBYFORGE_PROJECT
   s.files = PKG_FILES
-  s.summary = "Ruby interface to OpenLaszlo."
-  s.homepage = 'http://ropenlaszlo.rubyforge.org'
+  s.summary = "Ruby interface to the OpenLaszlo compiler."
+  s.homepage = 'http://github.com/osteele/ropenlaszlo'
   s.author = 'Oliver Steele'
   s.email = 'steele@osteele.com'
   s.require_path = 'lib'
@@ -46,9 +46,13 @@ EOF
     '--main' << 'doc/README'
 end
 
-Rake::GemPackageTask.new(spec) do |pkg|
+gemtask = Rake::GemPackageTask.new(spec) do |pkg|
   pkg.need_zip = true
   pkg.need_tar = true
+end
+
+task :gemspec => :gem do
+  cp "pkg/#{gemtask.gem_file}", "#{spec.name}.gemspec"
 end
 
 desc 'Generate documentation for the plugin.'
