@@ -31,9 +31,9 @@ module OpenLaszlo
   # files in the same directory as the Open<tt></tt>Laszlo SDK.
   class CompileServer
     # Options:
-    # * <tt>:openlaszlo_home</tt> - filesystem location of the Open<tt></tt>Laszlo SDK.  Defaults to EVN['OPENLASZLO_HOME']
+    # * <tt>:openlaszlo_home</tt> - filesystem location of the Open<tt></tt>Laszlo SDK.  Defaults to ENV['OPENLASZLO_HOME']
     # * <tt>:server_uri</tt> - the URI of the server.  Defaults to ENV['OPENLASZLO_URL'] if this is specified, otherwise to 'http://localhost:8080/lps-dev'.
-    def initialize options={}
+    def initialize(options={})
       @home = options[:home] || ENV['OPENLASZLO_HOME']
       dirs = Dir[File.join(@home, 'Server', 'lps-*', 'WEB-INF')]
       @home = File.dirname(dirs.first) if dirs.any?
@@ -47,7 +47,7 @@ module OpenLaszlo
     # Options:
     # * <tt>:format</tt> - request type (default 'swf')
     # See OpenLaszlo.compile for a description of +options+.
-    def compile source_file, options={}
+    def compile(source_file, options={})
       mtime = File.mtime source_file
       runtime = options[:runtime] || 'swf8'
       output = options[:output] || "#{File.expand_path(File.join(File.dirname(source_file), File.basename(source_file, '.lzx')))}.lzr=#{runtime}.swf"
@@ -60,15 +60,15 @@ module OpenLaszlo
     end
     
     private
-    def compile_object source_file, object, options={}
+    def compile_object(source_file, object, options={})
       options = {}.update(options).update(:output => object)
-      request source_file, options
+      request(source_file, options)
     end
     
-    def request_metadata_for source_file, options={}
+    def request_metadata_for(source_file, options={})
       results = {}
       options = {}.update(options).update(:format => 'canvas-xml', :output => nil)
-      text = request source_file, options
+      text = request(source_file, options)
       if text =~ %r{<warnings>(.*?)</warnings>}m
         results[:warnings] = $1.scan(%r{<error>\s*(.*?)\s*</error>}m).map{|w|w.first}
       elsif text !~ %r{<canvas>} && text =~ %r{<pre>Error:\s*(.*?)\s*</pre>}m
@@ -77,12 +77,12 @@ module OpenLaszlo
       return results
     end
     
-    def request source_file, options={}
+    def request(source_file, options={})
       output = options[:output]
       require 'net/http'
       require 'uri'
       # assert that pathname is relative to LPS home:
-      absolute_path = File.expand_path source_file
+      absolute_path = File.expand_path(source_file)
       raise "#{absolute_path} isn't inside #{@home}" unless absolute_path.index(@home) == 0
       server_relative_path = absolute_path[@home.length..-1]
       # FIXME: this doesn't handle quoting; use recursive File.split instead
@@ -131,7 +131,7 @@ module OpenLaszlo
     # the value specified by :home.
     # * <tt>:openlaszlo_home</tt> - the home directory of the Open<tt></tt>Laszlo SDK.
     # This defaults to ENV['OPENLASZLO_HOME'].
-    def initialize options={}
+    def initialize(options={})
       @lzc = options[:compiler_script]
       unless @lzc
         home = options[:openlaszlo_home] || ENV['OPENLASZLO_HOME']
@@ -215,7 +215,7 @@ EOF
   end
   
   # Sets the default compiler for future invocations of OpenLaszlo.compile.
-  def self.compiler= compiler
+  def self.compiler=(compiler)
     @compiler = compiler
   end
   
@@ -238,16 +238,16 @@ EOF
   # See CompileServer.compile and CommandLineCompiler.compile for
   # additional options that are specific to the compilation methods in
   # those classes.
-  def self.compile source_file, options={}
-    compiler.compile source_file, options
+  def self.compile(source_file, options={})
+    return compiler.compile source_file, options
   end
   
-  def self.make_html source_file, options={} #:nodoc:
+  def self.make_html(source_file, options={}) #:nodoc:
     raise 'not really supported, for now'
     options = {
       :format => 'html-object',
       :output => File.basename(source_file, '.lzx')+'.html'}.update(options)
-    compiler.compile source_file, options
+    compiler.compile(source_file, options)
     source_file = options[:output]
     s = open(source_file).read
     open(source_file, 'w') {|f| f.write s.gsub!(/\.lzx\?lzt=swf&amp;/, '.lzx.swf?')}

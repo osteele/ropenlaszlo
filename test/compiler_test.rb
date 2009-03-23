@@ -18,11 +18,11 @@ module CompilerTestHelper
   end
   
   private
-  def testfile_pathname file
-    File.expand_path file, File.dirname(__FILE__)
+  def testfile_pathname(file)
+    return File.expand_path(file, File.dirname(__FILE__))
   end
   
-  def assert_same_file a, b
+  def assert_same_file(a, b)
     assert_equal File.expand_path(a), File.expand_path(b)
   end
   
@@ -32,7 +32,7 @@ module CompilerTestHelper
     rm_f output
     raise "Unable to remove output file: #{output}" if File.exists?(output)
     begin
-      result = OpenLaszlo::compile file, *options
+      result = OpenLaszlo::compile(file, *options)
       assert_same_file output, result[:output]
       assert File.exists?(output), "#{output} does not exist"
       return result
@@ -83,13 +83,13 @@ class CompileServerTest < Test::Unit::TestCase
   private
   alias :saved_compile :compile
   
-  def compile file, output=nil, options={}
+  def compile(file, output=nil, options={})
     raise "unimplemented" if output
     file = testfile_pathname file
-    server_local_file = File.join @test_dir, File.basename(file)
+    server_local_file = File.join(@test_dir, File.basename(file))
     cp file, server_local_file
     begin
-      saved_compile server_local_file, output, options
+      saved_compile(server_local_file, output, options)
     ensure
       rm_f server_local_file
     end
