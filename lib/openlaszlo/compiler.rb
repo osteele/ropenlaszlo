@@ -1,6 +1,5 @@
-# Author:: Oliver Steele
-# Copyright:: Copyright (c) 2005-2008 Oliver Steele.  All rights reserved.
-# License:: MIT License
+require 'net/http'
+require 'uri'
 
 # == module OpenLaszlo
 #
@@ -49,14 +48,15 @@ module OpenLaszlo
     # * <tt>:format</tt> - request type (default 'swf')
     # See OpenLaszlo.compile for a description of +options+.
     def compile(source_file, options={})
-      mtime = File.mtime source_file
+      mtime = File.mtime(source_file)
       runtime = options[:runtime] || 'swf8'
-      output = options[:output] || "#{File.expand_path(File.join(File.dirname(source_file), File.basename(source_file, '.lzx')))}.lzr=#{runtime}.swf"
+      default_output = source_file.sub(/\.lzx/, '') + '.swf'
+      output = options[:output] || default_output
       compile_object(source_file, output, options)
       results = request_metadata_for(source_file, options)
       raise "Race condition: #{source_file} was modified during compilation" if mtime != File.mtime(source_file)
-      results[:output] = output
       raise CompilationError.new(results[:error]) if results[:error]
+      results[:output] = output
       return results
     end
 
@@ -67,8 +67,8 @@ module OpenLaszlo
     end
     
     def request_metadata_for(source_file, options={})
-      results = {}
       options = {}.update(options).update(:format => 'canvas-xml', :output => nil)
+      results = {}
       text = request(source_file, options)
       if text =~ %r{<warnings>(.*?)</warnings>}m
         results[:warnings] = $1.scan(%r{<error>\s*(.*?)\s*</error>}m).map { |w| w.first }
@@ -80,8 +80,6 @@ module OpenLaszlo
     
     def request(source_file, options={})
       output = options[:output]
-      require 'net/http'
-      require 'uri'
       # assert that pathname is relative to LPS home:
       absolute_path = File.expand_path(source_file)
       server_relative_path = nil
@@ -98,8 +96,8 @@ module OpenLaszlo
         raise InvalidSourceLocation.new("#{absolute_path} isn't inside #{@home}") unless absolute_path.index(@home) == 0
         server_relative_path = absolute_path[@home.length..-1]
         # FIXME: this doesn't handle quoting; use recursive File.split instead
-        # FIXME: should encode the url, for filenames that include '/'
-        server_relative_path.gsub(File::Separator, '/')
+        # FIXME: encode the url
+        server_relative_path.gsub!(File::Separator, '/')
       end
       options = {
         :lzr => options[:runtime],
@@ -174,11 +172,9 @@ module OpenLaszlo
     # See OpenLaszlo.compile for a description of +options+.
     def compile(source_file, options={})
       runtime = options[:runtime] || 'swf8'
-      output_suffix = ".lzr=#{runtime}.swf"
       default_output = File.join(File.dirname(source_file),
-                                 File.basename(source_file, '.lzx') + output_suffix)
+                                 File.basename(source_file, '.lzx') + '.swf')
       output = options[:output] || default_output
-      raise "#{source_file} and #{output} do not have the same basename." unless File.basename(source_file, '.lzx') == File.basename(output, output_suffix)
       args = []
       args << "--runtime=#{options[:runtime]}" if options[:runtime]
       args << '--debug' if options[:debug]
@@ -195,7 +191,13 @@ module OpenLaszlo
         stdin, stdout, stderr = Open3.popen3(command)
         errors = stdout.read
         warnings = stderr.readlines
-        warnings.shift if warnings.first and warnings.first =~ /^Compiling:/
+        # OpenLaszlo >= 4.0
+        if warnings.first and warnings.first =~ /^Compiling:.* to (.+)/
+          real_output = $1
+          warnings.shift
+          FileUtils.mv(real_output, output) if
+            File.exists?(real_output) and real_output != output
+        end
       rescue NotImplementedError
         # Windows doesn't have popen
         errors = `#{command}`
@@ -270,18 +272,5 @@ EOF
     compiler.compile(source_file, options)
   rescue InvalidSourceLocation
     CommandLineCompiler.new.compile(source_file, options)
-  end
-  
-  def self.make_html(source_file, options={}) #:nodoc:
-    raise 'not really supported, for now'
-    options = {
-      :format => 'html-object',
-      :output => File.basename(source_file, '.lzx')+'.html'}.update(options)
-    compiler.compile(source_file, options)
-    source_file = options[:output]
-    s = open(source_file).read
-    open(source_file, 'w') do |f|
-      f << s.gsub!(/\.lzx\?lzt=swf&amp;/, '.lzx.swf?')
-    end
   end
 end

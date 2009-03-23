@@ -28,7 +28,7 @@ module CompilerTestHelper
   
   def compile(file, output=nil, options={})
     file = testfile_pathname(file)
-    output ||= File.join(File.dirname(file), File.basename(file, '.lzx')+'.lzr=swf8.swf')
+    output ||= File.join(File.dirname(file), File.basename(file, '.lzx')+'.swf')
     rm_f output
     raise "Unable to remove output file: #{output}" if File.exists?(output)
     begin
