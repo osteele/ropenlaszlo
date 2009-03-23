@@ -12,7 +12,7 @@ require 'rake/rdoctask'
 require 'rake/clean'
 
 PKG_NAME = "ropenlaszlo"
-PKG_VERSION = '0.4.1'
+PKG_VERSION = '0.5'
 RUBYFORGE_PROJECT = 'ropenlaszlo'
 RUBYFORGE_USER = ENV['RUBYFORGE_USER']
 
