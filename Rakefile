@@ -13,7 +13,7 @@ require 'rake/clean'
 PKG_NAME = "ropenlaszlo"
 RUBYFORGE_PROJECT = 'ropenlaszlo'
 
-DOC_FILES = FileList['README.rdoc', 'MIT-LICENSE', 'CHANGES', 'TODO']
+DOC_FILES = FileList['README.rdoc', 'MIT-LICENSE', 'CHANGES.rdoc', 'TODO.rdoc']
 PKG_FILES = FileList['{lib,test}/**/*'].exclude('.svn') + DOC_FILES
 
 CLEAN.include FileList['test/*.swf']
