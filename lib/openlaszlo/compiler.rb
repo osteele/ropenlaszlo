@@ -68,7 +68,7 @@ module OpenLaszlo
     
     def request_metadata_for(source_file, options={})
       options = {}.update(options).update(:format => 'canvas-xml', :output => nil)
-      results = {}
+      results = {:compiler => self}
       text = request(source_file, options)
       if text =~ %r{<warnings>(.*?)</warnings>}m
         results[:warnings] = $1.scan(%r{<error>\s*(.*?)\s*</error>}m).map { |w| w.first }
@@ -207,7 +207,7 @@ module OpenLaszlo
       if errors =~ /^Compilation errors occurred:\n/
         raise CompilationError.new($'.strip)
       end
-      results = {:output => output, :warnings => warnings}
+      results = {:output => output, :warnings => warnings, :compiler => compiler}
       return results
     end
 
