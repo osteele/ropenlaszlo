@@ -14,7 +14,7 @@ PKG_NAME = "ropenlaszlo"
 RUBYFORGE_PROJECT = 'ropenlaszlo'
 
 DOC_FILES = FileList['README.rdoc', 'MIT-LICENSE', 'CHANGES.rdoc', 'TODO.rdoc']
-PKG_FILES = FileList['{lib,test}/**/*'].exclude('.svn') + DOC_FILES
+PKG_FILES = FileList['{lib,test}/**/*'].exclude('.svn, *.orig') + DOC_FILES
 
 CLEAN.include FileList['test/*.swf']
 
@@ -23,15 +23,12 @@ begin
   Jeweler::Tasks.new do |s|
     s.name = PKG_NAME
     s.rubyforge_project = RUBYFORGE_PROJECT
-    s.files = PKG_FILES
     s.summary = "Ruby interface to the OpenLaszlo compiler."
+    s.description = "ROpenLaszlo is an interface to the OpenLaszlo compiler."
     s.homepage = 'http://github.com/osteele/ropenlaszlo'
     s.author = 'Oliver Steele'
     s.email = 'steele@osteele.com'
-    s.require_path = 'lib'
-    s.description = <<-EOF
-    ROpenLaszlo is an interface to the OpenLaszlo compiler.
-EOF
+    s.files = PKG_FILES
     s.has_rdoc = true
     s.extra_rdoc_files = DOC_FILES
     s.rdoc_options << '--title' << "ROpenLaszlo: #{s.summary.sub(/.$/,'')}" <<
