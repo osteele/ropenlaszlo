@@ -1,10 +1,3 @@
-# Copyright (c) 2006 Oliver Steele <steele@osteele.com>
-# All rights reserved.
-# 
-# This program is free software.
-# This file is distributed under an MIT style license.  See
-# MIT-LICENSE for details.
-
 require 'rubygems'
 require 'rake/testtask'
 require 'rake/rdoctask'
@@ -12,6 +5,7 @@ require 'rake/clean'
 
 PKG_NAME = "ropenlaszlo"
 RUBYFORGE_PROJECT = 'ropenlaszlo'
+RUBYFORGE_USER = 'osteele'
 
 DOC_FILES = FileList['README.rdoc', 'MIT-LICENSE', 'CHANGES.rdoc', 'TODO.rdoc']
 PKG_FILES = FileList['{lib,test}/**/*'].exclude('.svn, *.orig') + DOC_FILES
@@ -32,8 +26,8 @@ begin
     s.has_rdoc = true
     s.extra_rdoc_files = DOC_FILES
     s.rdoc_options << '--title' << "ROpenLaszlo: #{s.summary.sub(/.$/,'')}" <<
-      '--exclude' << 'test/.*'
-    '--main' << 'README.rdoc'
+      '--exclude' << 'test/.*' <<
+      '--main' << 'README.rdoc'
   end
 rescue LoadError
   puts "Jeweler not available. Install it with: sudo gem install technicalpickles-jeweler -s http://gems.github.com"
@@ -49,7 +43,7 @@ desc 'Generate documentation for the plugin.'
 Rake::RDocTask.new(:rdoc) do |rd|
   rd.rdoc_dir = 'rdoc'
   #rd.options += spec.rdoc_options.to_a.flatten
-  rd.rdoc_files.include 'doc/README' # neceessary for --main to work
+  rd.rdoc_files.include 'README.rdoc' # neceessary for --main to work
   rd.rdoc_files.include FileList['lib/**/*.rb']
   rd.rdoc_files.exclude 'test/*'
 end

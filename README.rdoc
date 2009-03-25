@@ -1,10 +1,12 @@
 = ROpenLaszlo: Interface to the OpenLaszlo compiler
 
-ROpenLaszo is a Ruby interface to the OpenLaszlo[openlaszlo.org] compiler.  It allows you to compile Open<tt></tt>Laszlo programs from within Ruby, in order to integrate Open<tt></tt>Laszlo development into Rake or Rails applications.
+ROpenLaszo is a Ruby interface to the OpenLaszlo[openlaszlo.org] compiler.  It allows you to compile Open<tt></tt>Laszlo programs from within Ruby, in order to integrate Open<tt></tt>Laszlo development into Rake files or Rails applications.
 
-If you are using Open<tt></tt>Laszlo with Ruby on Rails, you probably want the {OpenLaszlo Rails plugin}[laszlo-plugin.rubyforge.org] as well.
+If you are using Open<tt></tt>Laszlo with Ruby on Rails, you want the {OpenLaszlo Rails plugin}[laszlo-plugin.rubyforge.org] too.  That page contains instructions for installing both the gem and the plugin; you can read those instructions instead of these.
 
-OpenLaszlo[openlaszlo.org] programs are written in XML with embedded JavaScript, and compiled into Flash (swf) binary files, or DHTML.  (As of this writing, the DHTML target is in pre-beta form.)  The APIs in this library make it easy for Ruby code to invoke the Open<tt></tt>Laszlo compiler.  For example, if hello.lzx contains the following text:
+== Overview
+
+Open<tt></tt>Laszlo programs are written in XML with embedded JavaScript, and compiled into either Flash (swf) binary files, or DHTML.  The APIs in this library make it easy for Ruby code to invoke the Open<tt></tt>Laszlo compiler.  For example, if hello.lzx contains the following text:
   <canvas>
     <window>
       <button>Hello, World!</button>
@@ -40,7 +42,7 @@ The following includes such a task:
   $ gem install osteele-ropenlaszlo -s http://gems.github.com
 
 2:: Set your +OPENLASZLO_HOME+ environment variable to the directory that contains the {OpenLaszlo SDK}[openlaszlo.org].  If the following prints something, you've got it right:
-  grep Laszlo "$OPENLASZLO_HOME/README.txt"
+  $ grep Laszlo "$OPENLASZLO_HOME/README.txt"
 
 3:: (Optional)  Set your +OPENLASZLO_URL+ environment variable to the web location of the Open<tt></tt>Laszlo server; for example, <tt>http</tt><tt>://localhost:8080/lps-3.1</tt>.  If you omit this step, the module will use the command line compiler, which is slower but is not limited to compiling files inside of +OPENLASZLO_HOME+.
 
@@ -48,26 +50,25 @@ The following includes such a task:
 
 == Additional Resources
 
+* The {OpenLaszlo Rails plugin}[laszlo-plugin.rubyforge.org] provides generators, view tasks, and rake tasks for using Open<tt></tt>Laszlo with Ruby on Rails.
+
 * The {OpenLaszlo web site}[openlaszlo.org] is a rich source of information about the Open<tt></tt>Laszlo platform.  It includes links to the wiki, mailing lists, and forums.
-
-* The {Laszlo on Rails}[groups.google.com/group/laszlo-on-rails] news group discusses the integration of Open<tt></tt>Laszlo with Ruby on Rails.
-
-* The {OpenLaszlo Rails plugin}[laszlo-plugin.rubyforge.org] provides generators and scaffolding for using Open<tt></tt>Laszlo with Ruby on Rails.
 
 * {This OpenLaszlo Blog entry}[weblog.openlaszlo.org/archives/2006/01/deploying-openlaszlo-applications-with-rake/] has additional information and some examples of using ROpenLaszlo in a Rakefile.
 
-* The RubyForge project page is here[http://rubyforge.org/projects/ropenlaszlo/].
+* {ROpenLaszlo RubyForge project page}[http://rubyforge.org/projects/ropenlaszlo/]
+
+* {ROpenLaszlo git repository}[http://github.com/osteele/ropenlaszlo]
 
 
 == Author
 
-Oliver Steele
-steele@osteele.com
+Oliver Steele <steele@osteele.com>
 
 
 == License
 
-ROpenLaszlo is copyright (c) 2006 - 2009 by Oliver Steele.  It is
+ROpenLaszlo is copyright (C) 2006 - 2009 by Oliver Steele.  It is
 open-source software, and may be redistributed under the terms of the
-MIT license. The text of this licence is included in the ROpenLaszlo
+MIT license. The text of this license is included in the ROpenLaszlo
 distribution.
