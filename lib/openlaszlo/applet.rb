@@ -1,6 +1,3 @@
-# Author:: Oliver Steele
-# Copyright:: Copyright (c) 2005-2008 Oliver Steele.  All rights reserved.
-# License:: MIT License
 module OpenLaszlo
   class Applet
     attr_reader :source
@@ -16,13 +13,13 @@ module OpenLaszlo
 
     def compile(target=nil, options={})
       target ||= source + '.swf'
-      return if up2date?(target) unless options[:force]
+      return if uptodate?(target) unless options[:force]
 
       puts "Compiling #{source} -> #{target}" if options[:verbose]
       OpenLaszlo::compile(source, options)
     end
 
-    def up2date?(target=nil)
+    def uptodate?(target=nil)
       target ||= source + '.swf'
       return false unless File.exists?(target)
       sources = Dir["#{source_dir}/**/*"].reject { |fname| fname =~ /\.lzx\.swf/ } -

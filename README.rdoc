@@ -39,7 +39,7 @@ The following includes such a task:
 0:: Download and install the {OpenLaszlo SDK}[openlaszlo.org]
 
 1: Install this gem
-  $ gem install osteele-ropenlaszlo -s http://gems.github.com
+  $ sudo gem install ropenlaszlo
 
 2:: Set your +OPENLASZLO_HOME+ environment variable to the directory that contains the {OpenLaszlo SDK}[openlaszlo.org].  If the following prints something, you've got it right:
   $ grep Laszlo "$OPENLASZLO_HOME/README.txt"
@@ -47,6 +47,17 @@ The following includes such a task:
 3:: (Optional)  Set your +OPENLASZLO_URL+ environment variable to the web location of the Open<tt></tt>Laszlo server; for example, <tt>http</tt><tt>://localhost:8080/lps-3.1</tt>.  If you omit this step, the module will use the command line compiler, which is slower but is not limited to compiling files inside of +OPENLASZLO_HOME+.
 
 <b>Note:</b> The command-line compiler is broken in the Windows version of Open<tt></tt>Laszlo 3.1.1.  If you are running Windows, step (3) is required.  ({OpenLaszlo bug 1428}[http://www.openlaszlo.org/jira/browse/LPP-1428])
+
+== Tips
+
+The Ruby front end to the compiler uses two compilation methods.  If OPENLASZLO_URL is set, and the source file is in a subdirectory of the OpenLaszlo servlet directory, then the compiler will request the URL that corresponds to the source location.  Otherwise, the OpenLaszlo command-line compiler is used.
+
+If the compiler is going to be invoked more than once (because several files are being compiled, or because the compiler is being used in an edit/compile/run cycle), the compile server is faster.
+
+You can place a symbolic link to a source directory in the OpenLaszlo servlet directory thus:
+  require 'openlaszlo/utils'
+  OpenLaszlo::symlink_to '.'
+
 
 == Additional Resources
 
